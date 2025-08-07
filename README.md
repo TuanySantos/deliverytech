@@ -32,5 +32,6 @@ Sistema de delivery desenvolvido com Spring Boot e Java 21.
 - Profile: development
 
 ## 👨‍💻 Desenvolvedor
-[Seu Nome] - [Sua Turma]
+[Tuany Brito] - [SDE - TI 58B 02728 - ARQUITETURA DE SISTEMAS]
+
 Desenvolvido com JDK 21 e Spring Boot 3.2.x
