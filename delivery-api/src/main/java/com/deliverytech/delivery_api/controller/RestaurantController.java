@@ -21,6 +21,4 @@ public class RestaurantController {
     public List<RestaurantDTO> getAllRestaurants() {
         return restaurantService.findAll();
     }
-
-    
 }

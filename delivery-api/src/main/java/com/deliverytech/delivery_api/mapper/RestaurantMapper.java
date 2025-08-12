@@ -13,6 +13,6 @@ public interface RestaurantMapper {
     RestaurantMapper INSTANCE = Mappers.getMapper( RestaurantMapper.class); 
     
         @Mapping(source = "name", target = "restaurantName")
-        @Mapping(source = "address", target = "address")
+        @Mapping(source = "address", target = "endereco")
         RestaurantDTO restaurantToRestaurantDto(Restaurant restaurant);
 }
