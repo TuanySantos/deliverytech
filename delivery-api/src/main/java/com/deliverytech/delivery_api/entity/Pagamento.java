@@ -1,5 +1,7 @@
 package com.deliverytech.delivery_api.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,11 +13,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity(name = "restaurants")
-public class Restaurant {
+@Entity(name = "pagamento")
+public class Pagamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String address;
+    private String tipo;
+    private String valor;
+    private String status;
 }

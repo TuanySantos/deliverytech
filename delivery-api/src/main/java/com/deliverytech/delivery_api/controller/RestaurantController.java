@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.deliverytech.delivery_api.dto.RestaurantDTO;
+import com.deliverytech.delivery_api.dto.RestauranteDTO;
 import com.deliverytech.delivery_api.service.RestaurantService;
 
 @RestController
@@ -18,7 +18,7 @@ public class RestaurantController {
     private RestaurantService restaurantService;
 
     @GetMapping
-    public List<RestaurantDTO> getAllRestaurants() {
+    public List<RestauranteDTO> getAllRestaurants() {
         return restaurantService.findAll();
     }
 }
