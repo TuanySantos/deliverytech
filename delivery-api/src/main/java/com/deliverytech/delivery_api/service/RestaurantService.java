@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.deliverytech.delivery_api.dto.RestauranteDTO;
+import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.mapper.RestauranteMapper;
 import com.deliverytech.delivery_api.repository.RestaurantRepository;
 
@@ -31,6 +32,10 @@ public class RestaurantService {
         return repository.findAll().stream()
                 .map(mapper::restaurantToRestaurantDto)
                 .collect(Collectors.toList());
+    }
+
+    public Restaurante save(RestauranteDTO dto) {
+        return  mapper.restauranteDtoToRestaurante(dto);
     }
 
 }

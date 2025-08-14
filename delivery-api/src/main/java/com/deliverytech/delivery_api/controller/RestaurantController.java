@@ -8,10 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.deliverytech.delivery_api.dto.RestauranteDTO;
+import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.service.RestaurantService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
-@RequestMapping("/api/v1/restaurants")
+@RequestMapping("/api/v1/restaurantes")
 public class RestaurantController {
 
     @Autowired
@@ -21,4 +25,10 @@ public class RestaurantController {
     public List<RestauranteDTO> getAllRestaurants() {
         return restaurantService.findAll();
     }
+
+    @PostMapping("/api/v1/restaurante")
+    public void restaurante(@RequestBody RestauranteDTO dto) {
+        restaurantService.save(dto);
+    }
+    
 }
