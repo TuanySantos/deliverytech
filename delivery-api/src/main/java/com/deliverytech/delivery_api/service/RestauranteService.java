@@ -14,13 +14,13 @@ import com.deliverytech.delivery_api.repository.RestauranteRepository;
 
 
 @Service
-public class RestaurantService {
+public class RestauranteService {
 
     private final RestauranteRepository repository;
 
     private final RestauranteMapper mapper;
 
-    public RestaurantService(RestauranteRepository repository, RestauranteMapper mapper) {
+    public RestauranteService(RestauranteRepository repository, RestauranteMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.deliverytech.delivery_api.dto.RestauranteDTO;
 import com.deliverytech.delivery_api.entity.Restaurante;
-import com.deliverytech.delivery_api.service.RestaurantService;
+import com.deliverytech.delivery_api.service.RestauranteService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class RestaurantController {
 
     @Autowired
-    private RestaurantService restaurantService;
+    private RestauranteService restaurantService;
 
     @GetMapping
     public List<RestauranteDTO> getAllRestaurants() {

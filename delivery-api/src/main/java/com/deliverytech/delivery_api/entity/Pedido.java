@@ -1,7 +1,9 @@
 package com.deliverytech.delivery_api.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.deliverytech.delivery_api.enums.StatusPedidoEnum;
@@ -26,7 +28,9 @@ import lombok.Setter;
 @Entity(name = "pedido")
 public class Pedido {
 
-    private LocalDateTime dataHora;
+    private LocalDateTime inicio;
+    private LocalDateTime fim;
+    private LocalDate dataPedido;
     private BigDecimal valorTotal;
 
     @Id
@@ -46,4 +50,12 @@ public class Pedido {
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<ItemPedido> itens;
+
+    public void addItem(ItemPedido item) {
+        if (itens == null) {
+            itens = new ArrayList<>();
+        }
+        itens.add(item);
+        item.setPedido(this);
+    }
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "itemPedido")
 public class ItemPedido {
     @Id
@@ -30,10 +32,10 @@ public class ItemPedido {
 
     @ManyToOne
     @JoinColumn(name = "itemId")
-    private ItemMenu item;
+    private Produto item;
 
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
 
-
-
-    
 }

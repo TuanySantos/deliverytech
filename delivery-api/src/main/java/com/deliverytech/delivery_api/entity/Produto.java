@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,8 +16,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity(name = "itemMenu")
-public class ItemMenu {
+@AllArgsConstructor
+@Entity(name = "produto")
+public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    
@@ -24,6 +26,7 @@ public class ItemMenu {
     private String descricao;
     private BigDecimal preco;
     private boolean disponivel;
+    private String categoria;
 
     @ManyToOne
     @JoinColumn(name = "restauranteId")

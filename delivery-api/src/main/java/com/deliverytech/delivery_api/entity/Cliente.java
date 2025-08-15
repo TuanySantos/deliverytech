@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "cliente")
 public class Cliente {
     @Id
@@ -28,6 +30,7 @@ public class Cliente {
     private String senha;
     private String endereco;
     private String telefone;
+    private boolean ativo;
 
     @OneToMany(mappedBy = "cliente")
     private List<Pedido> pedidos;
