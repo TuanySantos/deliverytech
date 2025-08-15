@@ -10,19 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.deliverytech.delivery_api.dto.RestauranteDTO;
 import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.mapper.RestauranteMapper;
-import com.deliverytech.delivery_api.repository.RestaurantRepository;
+import com.deliverytech.delivery_api.repository.RestauranteRepository;
 
 
 @Service
 public class RestaurantService {
 
-    @Autowired
-    private final RestaurantRepository repository;
+    private final RestauranteRepository repository;
 
-    @Autowired
     private final RestauranteMapper mapper;
 
-    public RestaurantService(RestaurantRepository repository, RestauranteMapper mapper) {
+    public RestaurantService(RestauranteRepository repository, RestauranteMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
@@ -35,7 +33,7 @@ public class RestaurantService {
     }
 
     public Restaurante save(RestauranteDTO dto) {
-        return  mapper.restauranteDtoToRestaurante(dto);
+        return repository.save(mapper.restauranteDtoToRestaurante(dto));
     }
 
 }

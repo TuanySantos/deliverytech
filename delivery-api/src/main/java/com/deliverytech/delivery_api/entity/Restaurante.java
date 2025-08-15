@@ -2,13 +2,10 @@ package com.deliverytech.delivery_api.entity;
 
 import java.util.List;
 
-import org.hibernate.mapping.Join;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +24,11 @@ public class Restaurante {
     private String telefone;
     private String categoria;
     private boolean ativo;
+    private double taxaEntrega;
 
     @OneToMany(mappedBy = "restaurante")
     private List<ItemMenu> menu;
 
-
+    @OneToMany(mappedBy = "restaurante")
+    private List<Pedido> pedidos;
 }

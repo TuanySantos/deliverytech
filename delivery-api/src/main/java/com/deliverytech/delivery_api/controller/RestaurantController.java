@@ -27,8 +27,7 @@ public class RestaurantController {
     }
 
     @PostMapping("/api/v1/restaurante")
-    public void restaurante(@RequestBody RestauranteDTO dto) {
-        restaurantService.save(dto);
+    public Restaurante restaurante(@RequestBody RestauranteDTO dto) {
+        return restaurantService.save(dto);
     }
-    
 }

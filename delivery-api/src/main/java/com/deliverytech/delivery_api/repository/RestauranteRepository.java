@@ -8,6 +8,9 @@ import java.util.List;
 
 
 @Repository
-public interface RestaurantRepository extends JpaRepository<Restaurante, Long> {
+public interface RestauranteRepository extends JpaRepository<Restaurante, Long> {
     List<Restaurante> findByCategoria(String categoria);
+    List<Restaurante> findByAtivo(boolean ativo);
+    List<Restaurante> findByTaxaEntregaLessThanEqual(double taxaEntrega);
+    List<Restaurante> findTop5ByOrderByNomeAsc();
 }
