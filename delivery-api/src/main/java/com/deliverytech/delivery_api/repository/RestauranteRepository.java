@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long> {
     List<Restaurante> findByCategoria(String categoria);
-    List<Restaurante> findByAtivo(boolean ativo);
+    List<Restaurante> findByAtivoTrue();
     List<Restaurante> findByTaxaEntregaLessThanEqual(BigDecimal taxaEntrega);
     List<Restaurante> findTop5ByOrderByNomeAsc();
+    List<Restaurante> findByNome(String nome);
 }

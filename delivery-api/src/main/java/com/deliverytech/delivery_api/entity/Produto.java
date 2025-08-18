@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity(name = "produto")
 public class Produto {
     @Id
@@ -31,5 +33,14 @@ public class Produto {
     @ManyToOne
     @JoinColumn(name = "restauranteId")
     private Restaurante restaurante;
-    
+
+    public Produto(Long id, String nome, String descricao, BigDecimal preco, String categoria, boolean disponivel, Restaurante restaurante) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.categoria = categoria;
+        this.disponivel = disponivel;
+        this.restaurante = restaurante;
+    }
 }

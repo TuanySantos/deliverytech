@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity(name = "itemPedido")
 public class ItemPedido {
     @Id
@@ -38,4 +40,11 @@ public class ItemPedido {
         this.pedido = pedido;
     }
 
+    public ItemPedido(Pedido pedido, Produto item, int quantidade) {
+        this.pedido = pedido;
+        this.item = item;
+        this.quantidade = quantidade;
+        this.preco = item.getPreco();
+        this.disponivel = true;
+    }
 }
