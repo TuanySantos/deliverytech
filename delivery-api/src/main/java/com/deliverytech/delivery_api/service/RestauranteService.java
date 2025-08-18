@@ -12,7 +12,7 @@ import com.deliverytech.delivery_api.repository.RestauranteRepository;
 
 
 @Service
-public class RestauranteService {
+public interface RestauranteService {
 
 
 }
