@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.deliverytech.delivery_api.dto.RestauranteDTO;
 import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.mapper.RestauranteMapper;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
@@ -15,24 +14,5 @@ import com.deliverytech.delivery_api.repository.RestauranteRepository;
 @Service
 public class RestauranteService {
 
-    private final RestauranteRepository repository;
-
-    private final RestauranteMapper mapper;
-
-    public RestauranteService(RestauranteRepository repository, RestauranteMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
-
-    @Transactional(readOnly = true)
-    public List<RestauranteDTO> findAll() {
-        return repository.findAll().stream()
-                .map(mapper::restaurantToRestaurantDto)
-                .collect(Collectors.toList());
-    }
-
-    public Restaurante save(RestauranteDTO dto) {
-        return repository.save(mapper.restauranteDtoToRestaurante(dto));
-    }
 
 }
