@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.deliverytech.delivery_api.service.PedidoService;
 import com.deliverytech.delivery_api.entity.Pedido;
-import com.deliverytech.delivery_api.enums.StatusPedidoEnum;
+import com.deliverytech.delivery_api.enums.StatusPedido;
 import com.deliverytech.delivery_api.repository.PedidoRepository;
 import com.deliverytech.delivery_api.dto.requestDto.PedidoRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO;
@@ -33,7 +33,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 	@Override
     @Transactional(readOnly = true)
-	public List<PedidoResponseDTO> buscarPorStatus(StatusPedidoEnum status) {
+	public List<PedidoResponseDTO> buscarPorStatus(StatusPedido status) {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findByStatus(status));
 	}
 
@@ -98,7 +98,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 	// Relatório: Por período e status
     @Transactional(readOnly = true)
-	public List<PedidoResponseDTO> listarPorPeriodoEStatus(LocalDateTime inicio, LocalDateTime fim, StatusPedidoEnum status) {
+	public List<PedidoResponseDTO> listarPorPeriodoEStatus(LocalDateTime inicio, LocalDateTime fim, StatusPedido status) {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findByPeriodoAndStatus(inicio, fim, status));
 	}
 }

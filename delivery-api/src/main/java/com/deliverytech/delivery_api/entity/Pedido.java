@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.deliverytech.delivery_api.enums.StatusPedidoEnum;
+import com.deliverytech.delivery_api.enums.StatusPedido;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -45,7 +45,7 @@ public class Pedido {
     private Cliente cliente;
 
     @Enumerated(EnumType.STRING)
-    private StatusPedidoEnum status;
+    private StatusPedido status;
 
     @ManyToOne
     @JoinColumn(name = "restaurantId")
@@ -66,7 +66,7 @@ public class Pedido {
         this.cliente = cliente;
         this.restaurante = restaurante;
         this.inicio = inicio;
-        this.status = StatusPedidoEnum.PENDENTE;
+        this.status = StatusPedido.PENDENTE;
         this.itens = new ArrayList<>();
     }
 }

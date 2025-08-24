@@ -16,7 +16,7 @@ import com.deliverytech.delivery_api.entity.Pedido;
 import com.deliverytech.delivery_api.entity.Produto;
 import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.enums.PerfilUsuario;
-import com.deliverytech.delivery_api.enums.StatusPedidoEnum;
+import com.deliverytech.delivery_api.enums.StatusPedido;
 import com.deliverytech.delivery_api.repository.ClienteRepository;
 import com.deliverytech.delivery_api.repository.PedidoRepository;
 import com.deliverytech.delivery_api.repository.ProdutoRepository;
@@ -121,7 +121,7 @@ public class DataLoaderService {
         pedido1.setCliente(cliente);
         pedido1.setRestaurante(restaurante);
         pedido1.setDataPedido(LocalDateTime.now());
-        pedido1.setStatus(StatusPedidoEnum.PENDENTE);
+        pedido1.setStatus(StatusPedido.PENDENTE);
         pedido1.setInicio(LocalDateTime.now());
         pedido1.setFim(LocalDateTime.now().plusHours(1));
         
@@ -218,7 +218,7 @@ public class DataLoaderService {
             .forEach(this::logPedidoDTO);
 
         log.info("Pedidos RECEBIDO:");
-        pedidoMapper.toResponseDtoList(pedidoRepository.findByStatus(StatusPedidoEnum.ENTREGUE))
+        pedidoMapper.toResponseDtoList(pedidoRepository.findByStatus(StatusPedido.ENTREGUE))
             .forEach(this::logPedidoDTO);
 
         log.info("Pedidos no último dia:");
