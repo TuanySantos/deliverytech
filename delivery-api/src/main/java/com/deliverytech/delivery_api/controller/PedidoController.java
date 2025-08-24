@@ -28,42 +28,66 @@ public class PedidoController {
 	}
 
 	@GetMapping("/cliente/{clienteId}")
-	public List<PedidoResponseDTO> buscarPorClienteId(@PathVariable Long clienteId) {
-		return pedidoService.buscarPorClienteId(clienteId);
+	public ResponseEntity<List<PedidoResponseDTO>> buscarPorClienteId(@PathVariable Long clienteId) {
+		List<PedidoResponseDTO> pedidos = pedidoService.buscarPorClienteId(clienteId);
+		if (pedidos == null || pedidos.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(pedidos);
 	}
 
 	@GetMapping("/status/{status}")
-	public List<PedidoResponseDTO> buscarPorStatus(@PathVariable StatusPedido status) {
-		return pedidoService.buscarPorStatus(status);
+	public ResponseEntity<List<PedidoResponseDTO>> buscarPorStatus(@PathVariable StatusPedido status) {
+		List<PedidoResponseDTO> pedidos = pedidoService.buscarPorStatus(status);
+		if (pedidos == null || pedidos.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(pedidos);
 	}
 
 	@GetMapping("/recentes")
-	public List<PedidoResponseDTO> buscarTop10Recentes() {
-		return pedidoService.buscarTop10Recentes();
+	public ResponseEntity<List<PedidoResponseDTO>> buscarTop10Recentes() {
+		List<PedidoResponseDTO> pedidos = pedidoService.buscarTop10Recentes();
+		if (pedidos == null || pedidos.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(pedidos);
 	}
 
 	@GetMapping("/periodo")
-	public List<PedidoResponseDTO> buscarPorPeriodo(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
-		return pedidoService.buscarPorPeriodo(inicio, fim);
+	public ResponseEntity<List<PedidoResponseDTO>> buscarPorPeriodo(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
+		List<PedidoResponseDTO> pedidos = pedidoService.buscarPorPeriodo(inicio, fim);
+		if (pedidos == null || pedidos.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(pedidos);
 	}
 
 	// CRUD
 	@PostMapping
 	public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO dto) {
 		PedidoResponseDTO salvo = pedidoService.salvar(dto);
-		return ResponseEntity.ok(salvo);
+		return ResponseEntity.status(201).body(salvo);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<PedidoResponseDTO> buscarPorId(@PathVariable Long id) {
 		PedidoResponseDTO pedido = pedidoService.buscarPorId(id);
-		return ResponseEntity.ok(pedido);
+		if (pedido != null) {
+			return ResponseEntity.ok(pedido);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<PedidoResponseDTO> atualizarPedido(@PathVariable Long id, @RequestBody PedidoRequestDTO dto) {
 		PedidoResponseDTO atualizado = pedidoService.atualizar(id, dto);
-		return ResponseEntity.ok(atualizado);
+		if (atualizado != null) {
+			return ResponseEntity.ok(atualizado);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 	@DeleteMapping("/{id}")
