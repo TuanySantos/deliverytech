@@ -35,6 +35,7 @@ public class Pedido {
     private LocalDateTime fim;
     private LocalDateTime dataPedido;
     private BigDecimal valorTotal;
+    private Integer tempoEstimadoEntrega; // em minutos
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

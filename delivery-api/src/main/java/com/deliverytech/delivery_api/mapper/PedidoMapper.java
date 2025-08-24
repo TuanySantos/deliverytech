@@ -13,4 +13,5 @@ public interface PedidoMapper {
     Pedido toEntity(PedidoRequestDTO dto);
     PedidoResponseDTO toResponseDto(Pedido entity);
     List<PedidoResponseDTO> toResponseDtoList(List<Pedido> entities);
+    
 }

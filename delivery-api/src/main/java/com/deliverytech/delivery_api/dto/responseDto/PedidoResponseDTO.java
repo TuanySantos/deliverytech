@@ -8,5 +8,6 @@ public record PedidoResponseDTO(
     String clienteNome,
     String restauranteNome,
     LocalDateTime dataPedido,
-    List<ItemPedidoResponseDTO> itens
+    List<ItemPedidoResponseDTO> itens,
+    Integer tempoEstimadoEntrega
 ) {}

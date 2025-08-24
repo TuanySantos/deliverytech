@@ -114,6 +114,9 @@ public class PedidoServiceImpl implements PedidoService {
 		Pedido pedido = pedidoMapper.toEntity(dto);
 		pedido.setValorTotal(total);
 		pedido.setStatus(StatusPedido.PENDENTE);
+		// TODO: Cálculo do tempo estimado de entrega 
+        int tempoEstimadoEntrega = 40;
+        pedido.setTempoEstimadoEntrega(tempoEstimadoEntrega);
 		Pedido salvo = pedidoRepository.save(pedido);
 
 		for (var itemDto : dto.itens()) {
