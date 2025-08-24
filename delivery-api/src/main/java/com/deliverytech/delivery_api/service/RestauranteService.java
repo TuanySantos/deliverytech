@@ -13,6 +13,9 @@ import com.deliverytech.delivery_api.repository.RestauranteRepository;
 
 @Service
 public interface RestauranteService {
-
-
+	List<Restaurante> buscarPorCategoria(String categoria);
+	List<Restaurante> buscarAtivos();
+	List<Restaurante> buscarPorTaxaEntregaMenorIgual(java.math.BigDecimal taxaEntrega);
+	List<Restaurante> buscarTop5PorNomeAsc();
+	List<Restaurante> buscarPorNome(String nome);
 }

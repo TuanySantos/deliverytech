@@ -61,4 +61,31 @@ public class ClienteServiceImpl implements ClienteService {
     public void deletar(Long id) {
         clienteRepository.deleteById(id);
     }
+
+    @Override
+    public ClienteResponseDTO buscarPorEmail(String email) {
+        return clienteRepository.findByEmail(email)
+                .map(clienteMapper::toResponseDto)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    }
+
+    @Override
+    public List<ClienteResponseDTO> listarAtivos() {
+        return clienteRepository.findByAtivoTrue()
+                .stream()
+                .map(clienteMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ClienteResponseDTO buscarPorNome(String nome) {
+        return clienteRepository.findByNomeContainingIgnoreCase(nome)
+                .map(clienteMapper::toResponseDto)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    }
+
+    @Override
+    public boolean existePorEmail(String email) {
+        return clienteRepository.existsByEmail(email);
+    }
 }

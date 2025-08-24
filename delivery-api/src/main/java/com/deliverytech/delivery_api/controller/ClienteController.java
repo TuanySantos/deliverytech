@@ -51,4 +51,29 @@ public class ClienteController {
         clienteService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
+    // Consultas customizadas
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ClienteResponseDTO> buscarPorEmail(@PathVariable String email) {
+        ClienteResponseDTO response = clienteService.buscarPorEmail(email);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/ativos")
+    public ResponseEntity<List<ClienteResponseDTO>> listarAtivos() {
+        List<ClienteResponseDTO> clientes = clienteService.listarAtivos();
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<ClienteResponseDTO> buscarPorNome(@PathVariable String nome) {
+        ClienteResponseDTO response = clienteService.buscarPorNome(nome);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/existe-email/{email}")
+    public ResponseEntity<Boolean> existePorEmail(@PathVariable String email) {
+        boolean existe = clienteService.existePorEmail(email);
+        return ResponseEntity.ok(existe);
+    }
 }

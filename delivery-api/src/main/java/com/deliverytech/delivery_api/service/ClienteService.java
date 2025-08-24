@@ -11,4 +11,9 @@ public interface ClienteService {
     List<ClienteResponseDTO> listarTodos();
     ClienteResponseDTO atualizar(Long id, ClienteRequestDTO clienteRequestDTO);
     void deletar(Long id);
+
+    ClienteResponseDTO buscarPorEmail(String email);
+    List<ClienteResponseDTO> listarAtivos();
+    ClienteResponseDTO buscarPorNome(String nome);
+    boolean existePorEmail(String email);
 }
