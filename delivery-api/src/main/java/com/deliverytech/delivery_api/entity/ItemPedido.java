@@ -33,18 +33,18 @@ public class ItemPedido {
     private Pedido pedido;
 
     @ManyToOne
-    @JoinColumn(name = "itemId")
-    private Produto item;
+    @JoinColumn(name = "produtoId")
+    private Produto produto;
 
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
     }
 
-    public ItemPedido(Pedido pedido, Produto item, int quantidade) {
+    public ItemPedido(Pedido pedido, Produto produto, int quantidade) {
         this.pedido = pedido;
-        this.item = item;
+        this.produto = produto;
         this.quantidade = quantidade;
-        this.preco = item.getPreco();
+        this.preco = produto.getPreco();
         this.disponivel = true;
     }
 }

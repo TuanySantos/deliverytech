@@ -1,6 +1,5 @@
 package com.deliverytech.delivery_api.service;
 
-import com.deliverytech.delivery_api.entity.Produto;
 import java.math.BigDecimal;
 import java.util.List;
 

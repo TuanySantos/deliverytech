@@ -2,6 +2,8 @@
 package com.deliverytech.delivery_api.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.deliverytech.delivery_api.service.RestauranteService;
 import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
@@ -12,38 +14,43 @@ import java.util.List;
 import java.math.BigDecimal;
 
 @Service
+@Transactional
 public class RestauranteServiceImpl implements RestauranteService {
 
 	private final RestauranteRepository restauranteRepository;
 	private final RestauranteMapper restauranteMapper;
 
-	@org.springframework.beans.factory.annotation.Autowired
 	public RestauranteServiceImpl(RestauranteRepository restauranteRepository, RestauranteMapper restauranteMapper) {
 		this.restauranteRepository = restauranteRepository;
 		this.restauranteMapper = restauranteMapper;
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<RestauranteResponseDTO> buscarPorCategoria(String categoria) {
 		return restauranteMapper.toResponseDtoList(restauranteRepository.findByCategoria(categoria));
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<RestauranteResponseDTO> buscarAtivos() {
 		return restauranteMapper.toResponseDtoList(restauranteRepository.findByAtivoTrue());
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<RestauranteResponseDTO> buscarPorTaxaEntregaMenorIgual(BigDecimal taxaEntrega) {
 		return restauranteMapper.toResponseDtoList(restauranteRepository.findByTaxaEntregaLessThanEqual(taxaEntrega));
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<RestauranteResponseDTO> buscarTop5PorNomeAsc() {
 		return restauranteMapper.toResponseDtoList(restauranteRepository.findTop5ByOrderByNomeAsc());
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<RestauranteResponseDTO> buscarPorNome(String nome) {
 		return restauranteMapper.toResponseDtoList(restauranteRepository.findByNome(nome));
 	}
@@ -56,6 +63,7 @@ public class RestauranteServiceImpl implements RestauranteService {
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public RestauranteResponseDTO buscarPorId(Long id) {
 		Restaurante restaurante = restauranteRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));

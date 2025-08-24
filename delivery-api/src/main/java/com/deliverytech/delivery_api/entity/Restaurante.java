@@ -37,12 +37,13 @@ public class Restaurante {
     @OneToMany(mappedBy = "restaurante")
     private List<Pedido> pedidos;
 
-    public Restaurante(Long id, String nome, String categoria, String endereco, boolean ativo, BigDecimal taxaEntrega) {
+    public Restaurante(Long id, String nome, String categoria, String endereco, boolean ativo, BigDecimal taxaEntrega, String telefone) {
         this.id = id;
         this.nome = nome;
         this.categoria = categoria;
         this.endereco = endereco;
         this.ativo = ativo;
         this.taxaEntrega = taxaEntrega;
+        this.telefone = telefone;
     }
 }

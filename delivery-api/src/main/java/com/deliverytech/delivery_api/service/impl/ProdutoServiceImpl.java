@@ -1,6 +1,8 @@
 package com.deliverytech.delivery_api.service.impl;
 import com.deliverytech.delivery_api.projection.ProdutoMaisVendidoProjection;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.deliverytech.delivery_api.service.ProdutoService;
 import com.deliverytech.delivery_api.entity.Produto;
 import com.deliverytech.delivery_api.repository.ProdutoRepository;
@@ -12,6 +14,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
+@Transactional
 public class ProdutoServiceImpl implements ProdutoService {
 
 	@Autowired
@@ -22,21 +25,25 @@ public class ProdutoServiceImpl implements ProdutoService {
 
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<ProdutoResponseDTO> buscarPorRestauranteId(Long restauranteId) {
 		return produtoMapper.toResponseDtoList(produtoRepository.findByRestauranteId(restauranteId));
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<ProdutoResponseDTO> buscarDisponiveis() {
 		return produtoMapper.toResponseDtoList(produtoRepository.findByDisponivelTrue());
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<ProdutoResponseDTO> buscarPorCategoria(String categoria) {
 		return produtoMapper.toResponseDtoList(produtoRepository.findByCategoria(categoria));
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<ProdutoResponseDTO> buscarPorPrecoMenorIgual(BigDecimal preco) {
 		return produtoMapper.toResponseDtoList(produtoRepository.findByPrecoLessThanEqual(preco));
 	}
@@ -49,6 +56,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public ProdutoResponseDTO buscarPorId(Long id) {
 		Produto produto = produtoRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("Produto não encontrado"));
@@ -73,6 +81,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 	}
 
     	// Relatório: Produtos mais vendidos
+    @Transactional(readOnly = true)
 	public List<ProdutoMaisVendidoProjection> listarProdutosMaisVendidos() {
 		return produtoRepository.findProdutosMaisVendidos();
 	}

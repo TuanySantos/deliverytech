@@ -1,13 +1,14 @@
 package com.deliverytech.delivery_api.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.deliverytech.delivery_api.entity.Cliente;
 import com.deliverytech.delivery_api.entity.ItemPedido;
@@ -22,9 +23,23 @@ import com.deliverytech.delivery_api.repository.ProdutoRepository;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
 
 @Service
+@Transactional
 public class DataLoaderService {
 
+    private static final Logger log = LoggerFactory.getLogger(DataLoaderService.class);
     
+    @Autowired
+    private com.deliverytech.delivery_api.mapper.ClienteMapper clienteMapper;
+    
+    @Autowired
+    private com.deliverytech.delivery_api.mapper.ProdutoMapper produtoMapper;
+    
+    @Autowired
+    private com.deliverytech.delivery_api.mapper.PedidoMapper pedidoMapper;
+    
+    @Autowired
+    private com.deliverytech.delivery_api.mapper.RestauranteMapper restauranteMapper;
+
     @Autowired
     private ClienteRepository clienteRepository;
 
@@ -37,12 +52,36 @@ public class DataLoaderService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    public void loadTestData() {
+        public void loadTestData() {
+
         loadClientes();
         loadRestaurantes();
         loadProdutos();
         loadPedidos();
         validateQueries();
+    executarCenariosTeste();
+    }
+
+
+    private void logClienteDTO(com.deliverytech.delivery_api.dto.responseDto.ClienteResponseDTO dto) {
+        log.info("ClienteDTO: id={}, nome={}, email={}, endereco={}, telefone={}, ativo={}",
+            dto.id(), dto.nome(), dto.email(), dto.endereco(), dto.telefone(), dto.ativo());
+    }
+
+    private void logProdutoDTO(com.deliverytech.delivery_api.dto.responseDto.ProdutoResponseDTO dto) {
+        log.info("ProdutoDTO: id={}, nome={}, descricao={}, preco={}, categoria={}, disponivel={}, restauranteNome={}",
+            dto.id(), dto.nome(), dto.descricao(), dto.preco(), dto.categoria(), dto.disponivel(), dto.restauranteNome());
+    }
+
+    private void logPedidoDTO(com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO dto) {
+        log.info("PedidoDTO: id={}, clienteNome={}, restauranteNome={}, dataPedido={}, itens={}",
+            dto.id(), dto.clienteNome(), dto.restauranteNome(), dto.dataPedido(), dto.itens());
+    }
+
+
+    private void logRestauranteDTO(com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO dto) {
+        log.info("RestauranteDTO: id={}, nome={}, categoria={}, endereco={}, taxaEntrega={}, ativo={}",
+            dto.id(), dto.nome(), dto.categoria(), dto.endereco(), dto.taxaEntrega(), dto.ativo());
     }
 
     private void loadClientes() {
@@ -54,8 +93,8 @@ public class DataLoaderService {
     }
 
     private void loadRestaurantes() {
-        Restaurante r1 = new Restaurante(null,"Pizzaria Bella Massa","Italiana","Av. Itália, 100",true,new BigDecimal("5.00"));
-        Restaurante r2 = new Restaurante(null,"Sushi Yama","Japonesa","Rua do Japão, 200",true,new BigDecimal("8.50"));
+        Restaurante r1 = new Restaurante(null,"Pizzaria Bella Massa","Italiana","Av. Itália, 100",true,new BigDecimal("5.00"), "(11)9888-0544");
+        Restaurante r2 = new Restaurante(null,"Sushi Yama","Japonesa","Rua do Japão, 200",true,new BigDecimal("8.50"), "(11)95874-0521");
         restauranteRepository.saveAll(List.of(r1, r2));
     }
 
@@ -78,9 +117,26 @@ public class DataLoaderService {
         Restaurante restaurante = restauranteRepository.findAll().get(0);
         Produto produto = produtoRepository.findAll().get(0);
 
-        Pedido pedido1 = new Pedido(cliente, restaurante, LocalDateTime.now());
-        ItemPedido item1 = new ItemPedido(pedido1, produto, 2);
+        Pedido pedido1 = new Pedido();
+        pedido1.setCliente(cliente);
+        pedido1.setRestaurante(restaurante);
+        pedido1.setDataPedido(LocalDateTime.now());
+        pedido1.setStatus(StatusPedidoEnum.PENDENTE);
+        pedido1.setInicio(LocalDateTime.now());
+        pedido1.setFim(LocalDateTime.now().plusHours(1));
+        
+
+        ItemPedido item1 = new ItemPedido();
+        item1.setPedido(pedido1);
+        item1.setProduto(produto);
+        item1.setQuantidade(2);
+        item1.setPreco(new BigDecimal("50"));
+
         pedido1.setItens(List.of(item1));
+
+        BigDecimal valorTotal = item1.getProduto().getPreco().multiply(BigDecimal.valueOf(item1.getQuantidade()));
+        pedido1.setValorTotal(valorTotal);
+
         pedidoRepository.save(pedido1);
     }
 
@@ -92,73 +148,114 @@ public class DataLoaderService {
     }
 
     private void validarClientes() {
-        System.out.println("Clientes ativos:");
-        clienteRepository.findByAtivoTrue()
-            .forEach(System.out::println);
+        log.info("Clientes ativos:");
+        Iterable<com.deliverytech.delivery_api.dto.responseDto.ClienteResponseDTO> clientesDTO = clienteMapper.toResponseDtoList(clienteRepository.findByAtivoTrue());
+        for (com.deliverytech.delivery_api.dto.responseDto.ClienteResponseDTO dto : clientesDTO) {
+            logClienteDTO(dto);
+        }
 
-        System.out.println("Buscar por email:");
-        Cliente cliente = clienteRepository.findByEmail("joao@gmail.com")
-            .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-        System.out.println(cliente);
+        log.info("Buscar por email:");
+        clienteRepository.findByEmail("joao@gmail.com")
+            .map(clienteMapper::toResponseDto)
+            .ifPresent(this::logClienteDTO);
 
-        System.out.println("Nome contendo 'Maria':");
+        log.info("Nome contendo 'Maria':");
         clienteRepository.findByNomeContainingIgnoreCase("maria")
-            .ifPresent(System.out::println);
+            .map(clienteMapper::toResponseDto)
+            .ifPresent(this::logClienteDTO);
 
-        System.out.println("Existe email 'joao@gmail.com'? " + clienteRepository.existsByEmail("joao@gmail.com"));
+        log.info("Existe email 'joao@gmail.com'? {}", clienteRepository.existsByEmail("joao@gmail.com"));
     }
 
     private void validarRestaurantes() {
-        System.out.println("Restaurantes ativos:");
-        restauranteRepository.findByAtivoTrue().forEach(System.out::println);
+        log.info("Restaurantes ativos:");
+        restauranteMapper.toResponseDtoList(restauranteRepository.findByAtivoTrue())
+            .forEach(this::logRestauranteDTO);
 
-        System.out.println("Por categoria 'Italiana':");
-        restauranteRepository.findByCategoria("Italiana").forEach(System.out::println);
+        log.info("Por categoria 'Italiana':");
+        restauranteMapper.toResponseDtoList(restauranteRepository.findByCategoria("Italiana"))
+            .forEach(this::logRestauranteDTO);
 
-        System.out.println("Taxa de entrega até R$ 6,00:");
-        restauranteRepository.findByTaxaEntregaLessThanEqual(new BigDecimal("6.00"))
-            .forEach(System.out::println);
+        log.info("Taxa de entrega até R$ 6,00:");
+        restauranteMapper.toResponseDtoList(restauranteRepository.findByTaxaEntregaLessThanEqual(new BigDecimal("6.00")))
+            .forEach(this::logRestauranteDTO);
 
-        System.out.println("Top 5 ordenado por nome:");
-        restauranteRepository.findTop5ByOrderByNomeAsc().forEach(System.out::println);
+        log.info("Top 5 ordenado por nome:");
+        restauranteMapper.toResponseDtoList(restauranteRepository.findTop5ByOrderByNomeAsc())
+            .forEach(this::logRestauranteDTO);
     }
 
     private void validarProdutos() {
-        Long restauranteId = restauranteRepository.findByNome("Pizzaria Bella Massa").get(0).getId();
+    Long restauranteId = restauranteRepository.findByNome("Pizzaria Bella Massa").get(0).getId();
 
-        System.out.println("Produtos do restaurante Pizzaria Bella Massa:");
-        produtoRepository.findByRestauranteId(restauranteId).forEach(System.out::println);
+        log.info("Produtos do restaurante Pizzaria Bella Massa:");
+        produtoMapper.toResponseDtoList(produtoRepository.findByRestauranteId(restauranteId))
+            .forEach(this::logProdutoDTO);
 
-        System.out.println("Produtos disponíveis:");
-        produtoRepository.findByDisponivelTrue().forEach(System.out::println);
+        log.info("Produtos disponíveis:");
+        produtoMapper.toResponseDtoList(produtoRepository.findByDisponivelTrue())
+            .forEach(this::logProdutoDTO);
 
-        System.out.println("Produtos por categoria 'Pizza':");
-        produtoRepository.findByCategoria("Pizza").forEach(System.out::println);
+        log.info("Produtos por categoria 'Pizza':");
+        produtoMapper.toResponseDtoList(produtoRepository.findByCategoria("Pizza"))
+            .forEach(this::logProdutoDTO);
 
-        System.out.println("Produtos até R$ 25,00:");
-        produtoRepository.findByPrecoLessThanEqual(new BigDecimal("25.00")).forEach(System.out::println);
+        log.info("Produtos até R$ 25,00:");
+        produtoMapper.toResponseDtoList(produtoRepository.findByPrecoLessThanEqual(new BigDecimal("25.00")))
+            .forEach(this::logProdutoDTO);
     }
 
     private void validarPedidos() {
-        Cliente cliente = clienteRepository.findByEmail("joao@gmail.com")
-        .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    Cliente cliente = clienteRepository.findByEmail("joao@gmail.com")
+    .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-        System.out.println("Pedidos do cliente João:");
-        pedidoRepository.findByClienteId(cliente.getId()).forEach(System.out::println);
+        log.info("Pedidos do cliente João:");
+        pedidoMapper.toResponseDtoList(pedidoRepository.findByClienteId(cliente.getId()))
+            .forEach(this::logPedidoDTO);
 
-        System.out.println("Últimos 10 pedidos:");
-        pedidoRepository.findTop10ByOrderByDataPedidoDesc().forEach(System.out::println);
+        log.info("Últimos 10 pedidos:");
+        pedidoMapper.toResponseDtoList(pedidoRepository.findTop10ByOrderByDataPedidoDesc())
+            .forEach(this::logPedidoDTO);
 
-        System.out.println("Pedidos RECEBIDO:");
-        pedidoRepository.findByStatus(StatusPedidoEnum.ENTREGUE).forEach(System.out::println);
+        log.info("Pedidos RECEBIDO:");
+        pedidoMapper.toResponseDtoList(pedidoRepository.findByStatus(StatusPedidoEnum.ENTREGUE))
+            .forEach(this::logPedidoDTO);
 
-        System.out.println("Pedidos no último dia:");
+        log.info("Pedidos no último dia:");
         LocalDateTime agora = LocalDateTime.now();
         LocalDateTime ontem = agora.minusDays(1);
-        pedidoRepository.findByDataPedidoBetween(ontem, agora).forEach(System.out::println);
+        pedidoMapper.toResponseDtoList(pedidoRepository.findByDataPedidoBetween(ontem, agora))
+            .forEach(this::logPedidoDTO);
     }
 
+       // =================== Cenários de Teste Obrigatórios ===================
+    public void executarCenariosTeste() {
+        log.info("CENÁRIOS DE TESTE OBRIGATÓRIOS");
 
+        //Cenário 1: Busca de Cliente por Email
+        log.info("Cenário 1: Busca de Cliente por Email");
+        clienteRepository.findByEmail("joao@email.com")
+            .map(clienteMapper::toResponseDto)
+            .ifPresentOrElse(this::logClienteDTO, () -> log.info("Cliente NÃO encontrado!"));
 
+        //Cenário 2: Produtos por Restaurante
+        log.info("Cenário 2: Produtos por Restaurante");
+    List<com.deliverytech.delivery_api.dto.responseDto.ProdutoResponseDTO> produtos = produtoMapper.toResponseDtoList(produtoRepository.findByRestauranteId(1L));
+    log.info("Produtos do restaurante 1:");
+    produtos.forEach(this::logProdutoDTO);
+
+        //Cenário 3: Pedidos Recentes
+        log.info("Cenário 3: Pedidos Recentes");
+    List<com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO> pedidos = pedidoMapper.toResponseDtoList(pedidoRepository.findTop10ByOrderByDataPedidoDesc());
+    log.info("Pedidos mais recentes:");
+    pedidos.forEach(this::logPedidoDTO);
+
+        //Cenário 4: Restaurantes por Taxa
+        log.info("Cenário 4: Restaurantes por Taxa");
+        List<com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO> restaurantes = restauranteMapper.toResponseDtoList(
+            restauranteRepository.findByTaxaEntregaLessThanEqual(new BigDecimal("5.00")));
+        log.info("Restaurantes com taxa até R$ 5,00:");
+        restaurantes.forEach(this::logRestauranteDTO);
+    }
 
 }

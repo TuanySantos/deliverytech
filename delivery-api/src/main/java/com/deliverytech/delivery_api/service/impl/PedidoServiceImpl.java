@@ -3,6 +3,8 @@ import java.math.BigDecimal;
 import com.deliverytech.delivery_api.projection.FaturamentoPorCategoriaProjection;
 import com.deliverytech.delivery_api.projection.VendasPorRestauranteProjection;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.deliverytech.delivery_api.service.PedidoService;
 import com.deliverytech.delivery_api.entity.Pedido;
 import com.deliverytech.delivery_api.enums.StatusPedidoEnum;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 @Service
+@Transactional
 public class PedidoServiceImpl implements PedidoService {
 
 	@Autowired
@@ -23,21 +26,25 @@ public class PedidoServiceImpl implements PedidoService {
 	private PedidoMapper pedidoMapper;
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<PedidoResponseDTO> buscarPorClienteId(Long clienteId) {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findByClienteId(clienteId));
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<PedidoResponseDTO> buscarPorStatus(StatusPedidoEnum status) {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findByStatus(status));
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<PedidoResponseDTO> buscarTop10Recentes() {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findTop10ByOrderByDataPedidoDesc());
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<PedidoResponseDTO> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findByDataPedidoBetween(inicio, fim));
 	}
@@ -50,6 +57,7 @@ public class PedidoServiceImpl implements PedidoService {
 	}
 
 	@Override
+    @Transactional(readOnly = true)
 	public PedidoResponseDTO buscarPorId(Long id) {
 		Pedido pedido = pedidoRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
@@ -71,21 +79,25 @@ public class PedidoServiceImpl implements PedidoService {
 	}
 
     	// Relatório: Total de vendas por restaurante
+    @Transactional(readOnly = true)
 	public List<VendasPorRestauranteProjection> listarTotalVendasPorRestaurante() {
 		return pedidoRepository.getTotalVendasPorRestaurante();
 	}
 
 	// Relatório: Faturamento por categoria
+    @Transactional(readOnly = true)
 	public List<FaturamentoPorCategoriaProjection> listarFaturamentoPorCategoria() {
 		return pedidoRepository.getFaturamentoPorCategoria();
 	}
 
 	// Relatório: Pedidos com valor acima de X
+    @Transactional(readOnly = true)
 	public List<PedidoResponseDTO> listarPedidosComValorAcima(BigDecimal valor) {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findPedidosComValorAcima(valor));
 	}
 
 	// Relatório: Por período e status
+    @Transactional(readOnly = true)
 	public List<PedidoResponseDTO> listarPorPeriodoEStatus(LocalDateTime inicio, LocalDateTime fim, StatusPedidoEnum status) {
 		return pedidoMapper.toResponseDtoList(pedidoRepository.findByPeriodoAndStatus(inicio, fim, status));
 	}

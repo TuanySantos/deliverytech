@@ -1,6 +1,6 @@
+
 package com.deliverytech.delivery_api.service.impl;
-
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +16,7 @@ import com.deliverytech.delivery_api.service.ClienteService;
 import com.deliverytech.delivery_api.projection.RankingClienteProjection;
 
 @Service
+@Transactional
 public class ClienteServiceImpl implements ClienteService {
 
     @Autowired
@@ -32,6 +33,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClienteResponseDTO buscarPorId(Long id) {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
@@ -39,6 +41,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClienteResponseDTO> listarTodos() {
         return clienteRepository.findAll()
                 .stream()
@@ -65,6 +68,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClienteResponseDTO buscarPorEmail(String email) {
         return clienteRepository.findByEmail(email)
                 .map(clienteMapper::toResponseDto)
@@ -72,6 +76,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClienteResponseDTO> listarAtivos() {
         return clienteRepository.findByAtivoTrue()
                 .stream()
@@ -80,6 +85,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClienteResponseDTO buscarPorNome(String nome) {
         return clienteRepository.findByNomeContainingIgnoreCase(nome)
                 .map(clienteMapper::toResponseDto)
@@ -87,10 +93,12 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existePorEmail(String email) {
         return clienteRepository.existsByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     public List<RankingClienteProjection> listarRankingClientesPorPedidos() {
         return clienteRepository.findRankingClientesPorPedidos();
     }
