@@ -28,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "pedido")
+@Entity(name = "Pedido")
 public class Pedido {
 
     private LocalDateTime inicio;

@@ -19,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "restaurante")
+@Entity(name = "Restaurante")
 public class Restaurante {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,7 @@
 package com.deliverytech.delivery_api.service.impl;
-
-
+import java.math.BigDecimal;
+import com.deliverytech.delivery_api.projection.FaturamentoPorCategoriaProjection;
+import com.deliverytech.delivery_api.projection.VendasPorRestauranteProjection;
 import org.springframework.stereotype.Service;
 import com.deliverytech.delivery_api.service.PedidoService;
 import com.deliverytech.delivery_api.entity.Pedido;
@@ -67,5 +68,25 @@ public class PedidoServiceImpl implements PedidoService {
 	@Override
 	public void deletar(Long id) {
 		pedidoRepository.deleteById(id);
+	}
+
+    	// Relatório: Total de vendas por restaurante
+	public List<VendasPorRestauranteProjection> listarTotalVendasPorRestaurante() {
+		return pedidoRepository.getTotalVendasPorRestaurante();
+	}
+
+	// Relatório: Faturamento por categoria
+	public List<FaturamentoPorCategoriaProjection> listarFaturamentoPorCategoria() {
+		return pedidoRepository.getFaturamentoPorCategoria();
+	}
+
+	// Relatório: Pedidos com valor acima de X
+	public List<PedidoResponseDTO> listarPedidosComValorAcima(BigDecimal valor) {
+		return pedidoMapper.toResponseDtoList(pedidoRepository.findPedidosComValorAcima(valor));
+	}
+
+	// Relatório: Por período e status
+	public List<PedidoResponseDTO> listarPorPeriodoEStatus(LocalDateTime inicio, LocalDateTime fim, StatusPedidoEnum status) {
+		return pedidoMapper.toResponseDtoList(pedidoRepository.findByPeriodoAndStatus(inicio, fim, status));
 	}
 }

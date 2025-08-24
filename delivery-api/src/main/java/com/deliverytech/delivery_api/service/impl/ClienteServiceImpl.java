@@ -1,5 +1,6 @@
 package com.deliverytech.delivery_api.service.impl;
 
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import com.deliverytech.delivery_api.entity.Cliente;
 import com.deliverytech.delivery_api.mapper.ClienteMapper;
 import com.deliverytech.delivery_api.repository.ClienteRepository;
 import com.deliverytech.delivery_api.service.ClienteService;
+import com.deliverytech.delivery_api.projection.RankingClienteProjection;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -88,4 +90,9 @@ public class ClienteServiceImpl implements ClienteService {
     public boolean existePorEmail(String email) {
         return clienteRepository.existsByEmail(email);
     }
+
+    public List<RankingClienteProjection> listarRankingClientesPorPedidos() {
+        return clienteRepository.findRankingClientesPorPedidos();
+    }
+
 }

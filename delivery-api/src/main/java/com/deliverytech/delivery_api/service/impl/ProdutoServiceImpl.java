@@ -1,5 +1,5 @@
 package com.deliverytech.delivery_api.service.impl;
-
+import com.deliverytech.delivery_api.projection.ProdutoMaisVendidoProjection;
 import org.springframework.stereotype.Service;
 import com.deliverytech.delivery_api.service.ProdutoService;
 import com.deliverytech.delivery_api.entity.Produto;
@@ -19,6 +19,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
 	@Autowired
 	private ProdutoMapper produtoMapper;
+
 
 	@Override
 	public List<ProdutoResponseDTO> buscarPorRestauranteId(Long restauranteId) {
@@ -62,7 +63,6 @@ public class ProdutoServiceImpl implements ProdutoService {
 		produto.setDescricao(dto.descricao());
 		produto.setPreco(dto.preco());
 		produto.setCategoria(dto.categoria());
-		// restauranteId pode ser atualizado se necessário
 		Produto atualizado = produtoRepository.save(produto);
 		return produtoMapper.toResponseDto(atualizado);
 	}
@@ -70,5 +70,10 @@ public class ProdutoServiceImpl implements ProdutoService {
 	@Override
 	public void deletar(Long id) {
 		produtoRepository.deleteById(id);
+	}
+
+    	// Relatório: Produtos mais vendidos
+	public List<ProdutoMaisVendidoProjection> listarProdutosMaisVendidos() {
+		return produtoRepository.findProdutosMaisVendidos();
 	}
 }
