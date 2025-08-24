@@ -1,0 +1,23 @@
+package com.deliverytech.delivery_api.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErroResponse> handleBusiness(BusinessException ex) {
+        HttpStatus status = switch (ex.getTipo()) {
+            case CLIENTE_NAO_ENCONTRADO -> HttpStatus.NOT_FOUND;
+            case EMAIL_JA_CADASTRADO -> HttpStatus.CONFLICT;
+            case PEDIDO_INVALIDO -> HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.BAD_REQUEST;
+        };
+
+        return ResponseEntity.status(status)
+            .body(new ErroResponse(ex.getTipo().name(), ex.getMessage()));
+    }
+}

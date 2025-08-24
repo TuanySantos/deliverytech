@@ -1,4 +1,3 @@
-
 package com.deliverytech.delivery_api.service.impl;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +9,8 @@ import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import com.deliverytech.delivery_api.dto.requestDto.RestauranteRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO;
 import com.deliverytech.delivery_api.mapper.RestauranteMapper;
+import com.deliverytech.delivery_api.exception.BusinessException;
+import com.deliverytech.delivery_api.enums.ErroNegocio;
 import java.util.List;
 import java.math.BigDecimal;
 
@@ -66,14 +67,14 @@ public class RestauranteServiceImpl implements RestauranteService {
     @Transactional(readOnly = true)
 	public RestauranteResponseDTO buscarPorId(Long id) {
 		Restaurante restaurante = restauranteRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
+			.orElseThrow(() -> new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado"));
 		return restauranteMapper.toResponseDto(restaurante);
 	}
 
 	@Override
 	public RestauranteResponseDTO atualizar(Long id, RestauranteRequestDTO dto) {
 		Restaurante restaurante = restauranteRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
+			.orElseThrow(() -> new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado"));
 		restaurante.setNome(dto.nome());
 		restaurante.setCategoria(dto.categoria());
 		restaurante.setEndereco(dto.endereco());

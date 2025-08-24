@@ -1,4 +1,3 @@
-
 package com.deliverytech.delivery_api.service.impl;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -14,6 +13,8 @@ import com.deliverytech.delivery_api.mapper.ClienteMapper;
 import com.deliverytech.delivery_api.repository.ClienteRepository;
 import com.deliverytech.delivery_api.service.ClienteService;
 import com.deliverytech.delivery_api.projection.RankingClienteProjection;
+import com.deliverytech.delivery_api.exception.BusinessException;
+import com.deliverytech.delivery_api.enums.ErroNegocio;
 
 @Service
 @Transactional
@@ -36,7 +37,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Transactional(readOnly = true)
     public ClienteResponseDTO buscarPorId(Long id) {
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
         return clienteMapper.toResponseDto(cliente);
     }
 
@@ -52,7 +53,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO dto) {
         Cliente clienteExistente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
 
         clienteExistente.setNome(dto.nome());
         clienteExistente.setEmail(dto.email());
@@ -72,7 +73,7 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteResponseDTO buscarPorEmail(String email) {
         return clienteRepository.findByEmail(email)
                 .map(clienteMapper::toResponseDto)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
     }
 
     @Override
@@ -89,7 +90,7 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteResponseDTO buscarPorNome(String nome) {
         return clienteRepository.findByNomeContainingIgnoreCase(nome)
                 .map(clienteMapper::toResponseDto)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
     }
 
     @Override

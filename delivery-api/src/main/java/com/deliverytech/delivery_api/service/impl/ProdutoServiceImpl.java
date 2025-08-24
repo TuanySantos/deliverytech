@@ -9,6 +9,8 @@ import com.deliverytech.delivery_api.repository.ProdutoRepository;
 import com.deliverytech.delivery_api.dto.requestDto.ProdutoRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.ProdutoResponseDTO;
 import com.deliverytech.delivery_api.mapper.ProdutoMapper;
+import com.deliverytech.delivery_api.exception.BusinessException;
+import com.deliverytech.delivery_api.enums.ErroNegocio;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,14 +61,14 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Transactional(readOnly = true)
 	public ProdutoResponseDTO buscarPorId(Long id) {
 		Produto produto = produtoRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+			.orElseThrow(() -> new BusinessException(ErroNegocio.PRODUTO_NAO_ENCONTRADO, "Produto não encontrado"));
 		return produtoMapper.toResponseDto(produto);
 	}
 
 	@Override
 	public ProdutoResponseDTO atualizar(Long id, ProdutoRequestDTO dto) {
 		Produto produto = produtoRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+			.orElseThrow(() -> new BusinessException(ErroNegocio.PRODUTO_NAO_ENCONTRADO, "Produto não encontrado"));
 		produto.setNome(dto.nome());
 		produto.setDescricao(dto.descricao());
 		produto.setPreco(dto.preco());

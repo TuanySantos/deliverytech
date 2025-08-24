@@ -1,0 +1,10 @@
+package com.deliverytech.delivery_api.enums;
+
+public enum ErroNegocio {
+    CLIENTE_NAO_ENCONTRADO,
+    PRODUTO_NAO_ENCONTRADO,
+    RESTAURANTE_NAO_ENCONTRADO,
+    EMAIL_JA_CADASTRADO,
+    PEDIDO_INVALIDO,
+    ESTOQUE_INSUFICIENTE
+}
