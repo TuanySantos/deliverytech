@@ -29,18 +29,20 @@ public class Produto {
     private BigDecimal preco;
     private boolean disponivel;
     private String categoria;
+    private int estoque;
 
     @ManyToOne
     @JoinColumn(name = "restauranteId")
     private Restaurante restaurante;
 
-    public Produto(Long id, String nome, String descricao, BigDecimal preco, String categoria, boolean disponivel, Restaurante restaurante) {
+    public Produto(Long id, String nome, String descricao, BigDecimal preco, String categoria, boolean disponivel, int estoque, Restaurante restaurante) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.categoria = categoria;
         this.disponivel = disponivel;
+        this.estoque = estoque;
         this.restaurante = restaurante;
     }
 }

@@ -102,11 +102,11 @@ public class DataLoaderService {
 
     private void loadProdutos() {
         produtos = Arrays.asList(
-            new Produto(null, "Pizza Margherita", "Tradicional com molho e queijo", new BigDecimal("30.00"), "Pizza", true, restauranteRepository.findByNome("Pizzaria Bella Massa").get(0)),
-            new Produto(null, "Pizza Calabresa", "Com cebola e azeitonas", new BigDecimal("32.00"), "Pizza", true, restauranteRepository.findByNome("Pizzaria Bella Massa").get(0)),
-            new Produto(null, "Temaki de Salmão", "Cone com arroz e salmão", new BigDecimal("22.00"), "Temaki", true, restauranteRepository.findByNome("Sushi Yama").get(0)),
-            new Produto(null, "Sashimi", "Fatias de salmão fresco", new BigDecimal("28.00"), "Sushi", true, restauranteRepository.findByNome("Sushi Yama").get(0)),
-            new Produto(null, "Hot Roll", "Enrolado frito recheado", new BigDecimal("26.00"), "Sushi", true, restauranteRepository.findByNome("Sushi Yama").get(0))
+            new Produto(null, "Pizza Margherita", "Tradicional com molho e queijo", new BigDecimal("30.00"), "Pizza", true, 50, restauranteRepository.findByNome("Pizzaria Bella Massa").get(0)),
+            new Produto(null, "Pizza Calabresa", "Com cebola e azeitonas", new BigDecimal("32.00"), "Pizza", true, 50, restauranteRepository.findByNome("Pizzaria Bella Massa").get(0)),
+            new Produto(null, "Temaki de Salmão", "Cone com arroz e salmão", new BigDecimal("22.00"), "Temaki", true, 50, restauranteRepository.findByNome("Sushi Yama").get(0)),
+            new Produto(null, "Sashimi", "Fatias de salmão fresco", new BigDecimal("28.00"), "Sushi", true, 50, restauranteRepository.findByNome("Sushi Yama").get(0)),
+            new Produto(null, "Hot Roll", "Enrolado frito recheado", new BigDecimal("26.00"), "Sushi", true, 50, restauranteRepository.findByNome("Sushi Yama").get(0))
         );
 
         produtoRepository.saveAll(produtos);

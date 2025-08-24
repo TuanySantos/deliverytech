@@ -23,9 +23,13 @@ import com.deliverytech.delivery_api.mapper.PedidoMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Service
 @Transactional
 public class PedidoServiceImpl implements PedidoService {
+
+    private static final Logger log = LoggerFactory.getLogger(PedidoServiceImpl.class);
 
 	@Autowired
 	private PedidoRepository pedidoRepository;
@@ -81,22 +85,26 @@ public class PedidoServiceImpl implements PedidoService {
 		if (!restaurante.isAtivo()) {
 			throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Restaurante fechado");
 		}
-		// TODO lógica para entrega na região se necessário
+		// TODO lógica para entrega na região
+       
+        if (cliente.getEndereco() == null || restaurante.getEndereco() == null ||
+            !cliente.getEndereco().toLowerCase().contains(restaurante.getEndereco().toLowerCase())) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Restaurante não entrega na região do cliente");
+        }
 
-		// Validação dos produtos e estoque
-		BigDecimal subtotal = BigDecimal.ZERO;
-		for (var itemDto : dto.itens()) {
-			Produto produto = produtoRepository.findById(itemDto.produtoId())
-				.orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Produto não encontrado"));
-			if (!produto.isDisponivel()) {
-				throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Produto indisponível");
-			}
-			// TODO estoque
-			// if (produto.getEstoque() < itemDto.quantidade()) {
-			//     throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Estoque insuficiente");
-			// }
-			subtotal = subtotal.add(produto.getPreco().multiply(BigDecimal.valueOf(itemDto.quantidade())));
-		}
+        // Validação dos produtos e estoque
+        BigDecimal subtotal = BigDecimal.ZERO;
+        for (var itemDto : dto.itens()) {
+            Produto produto = produtoRepository.findById(itemDto.produtoId())
+                .orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Produto não encontrado"));
+            if (!produto.isDisponivel()) {
+                throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Produto indisponível");
+            }
+            if (produto.getEstoque() < itemDto.quantidade()) {
+                throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Estoque insuficiente");
+            }
+            subtotal = subtotal.add(produto.getPreco().multiply(BigDecimal.valueOf(itemDto.quantidade())));
+        }
 
 		// Cálculo do pedido
 		BigDecimal taxaEntrega = restaurante.getTaxaEntrega();
@@ -107,6 +115,15 @@ public class PedidoServiceImpl implements PedidoService {
 		pedido.setValorTotal(total);
 		pedido.setStatus(StatusPedido.PENDENTE);
 		Pedido salvo = pedidoRepository.save(pedido);
+
+		for (var itemDto : dto.itens()) {
+            Produto produto = produtoRepository.findById(itemDto.produtoId()).get();
+            produto.setEstoque(produto.getEstoque() - itemDto.quantidade());
+            produtoRepository.save(produto);
+        }
+
+		log.info("Novo pedido recebido para restaurante: {}", restaurante.getNome());
+
 		return pedidoMapper.toResponseDto(salvo);
 	}
 
