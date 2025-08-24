@@ -28,6 +28,15 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteResponseDTO salvar(ClienteRequestDTO dto) {
+        if (dto.nome() == null || dto.nome().isBlank()) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Nome do cliente é obrigatório");
+        }
+        if (dto.email() == null || dto.email().isBlank()) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Email do cliente é obrigatório");
+        }
+        if (clienteRepository.existsByEmail(dto.email())) {
+            throw new BusinessException(ErroNegocio.EMAIL_JA_CADASTRADO, "Email já cadastrado");
+        }
         Cliente cliente = clienteMapper.toEntity(dto);
         Cliente salvo = clienteRepository.save(cliente);
         return clienteMapper.toResponseDto(salvo);
@@ -54,17 +63,30 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO dto) {
         Cliente clienteExistente = clienteRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
-
+        if (dto.nome() == null || dto.nome().isBlank()) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Nome do cliente é obrigatório");
+        }
+        if (dto.email() == null || dto.email().isBlank()) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Email do cliente é obrigatório");
+        }
+        if (!clienteExistente.getEmail().equals(dto.email()) && clienteRepository.existsByEmail(dto.email())) {
+            throw new BusinessException(ErroNegocio.EMAIL_JA_CADASTRADO, "Email já cadastrado");
+        }
         clienteExistente.setNome(dto.nome());
         clienteExistente.setEmail(dto.email());
-        // TODO: Implementar demais campos
-
+        clienteExistente.setSenha(dto.senha());
+        clienteExistente.setEndereco(dto.endereco());
+        clienteExistente.setTelefone(dto.telefone());
+        // TODO implementar perfil
+        //  clienteExistente.setPerfil(dto.perfil());
         Cliente atualizado = clienteRepository.save(clienteExistente);
         return clienteMapper.toResponseDto(atualizado);
     }
 
     @Override
     public void deletar(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
         clienteRepository.deleteById(id);
     }
 

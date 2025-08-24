@@ -81,7 +81,7 @@ public class PedidoServiceImpl implements PedidoService {
 		if (!restaurante.isAtivo()) {
 			throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Restaurante fechado");
 		}
-		// Adicione lógica para entrega na região se necessário
+		// TODO lógica para entrega na região se necessário
 
 		// Validação dos produtos e estoque
 		BigDecimal subtotal = BigDecimal.ZERO;
@@ -91,7 +91,7 @@ public class PedidoServiceImpl implements PedidoService {
 			if (!produto.isDisponivel()) {
 				throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Produto indisponível");
 			}
-			// Se houver campo de estoque, valide aqui
+			// TODO estoque
 			// if (produto.getEstoque() < itemDto.quantidade()) {
 			//     throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Estoque insuficiente");
 			// }
@@ -100,7 +100,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 		// Cálculo do pedido
 		BigDecimal taxaEntrega = restaurante.getTaxaEntrega();
-		BigDecimal desconto = BigDecimal.ZERO; // Adicione lógica de desconto se necessário
+		BigDecimal desconto = BigDecimal.ZERO;
 		BigDecimal total = subtotal.add(taxaEntrega).subtract(desconto);
 
 		Pedido pedido = pedidoMapper.toEntity(dto);

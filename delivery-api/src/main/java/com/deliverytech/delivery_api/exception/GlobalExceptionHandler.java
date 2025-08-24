@@ -10,12 +10,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErroResponse> handleBusiness(BusinessException ex) {
-        HttpStatus status = switch (ex.getTipo()) {
-            case CLIENTE_NAO_ENCONTRADO -> HttpStatus.NOT_FOUND;
-            case EMAIL_JA_CADASTRADO -> HttpStatus.CONFLICT;
-            case PEDIDO_INVALIDO -> HttpStatus.BAD_REQUEST;
-            default -> HttpStatus.BAD_REQUEST;
-        };
+            HttpStatus status = switch (ex.getTipo()) {
+                case CLIENTE_NAO_ENCONTRADO, RESTAURANTE_NAO_ENCONTRADO, PRODUTO_NAO_ENCONTRADO -> HttpStatus.NOT_FOUND;
+                case EMAIL_JA_CADASTRADO -> HttpStatus.CONFLICT;
+                case PEDIDO_INVALIDO -> HttpStatus.BAD_REQUEST;
+                case ESTOQUE_INSUFICIENTE -> HttpStatus.BAD_REQUEST;
+                default -> HttpStatus.BAD_REQUEST;
+            };
 
         return ResponseEntity.status(status)
             .body(new ErroResponse(ex.getTipo().name(), ex.getMessage()));
