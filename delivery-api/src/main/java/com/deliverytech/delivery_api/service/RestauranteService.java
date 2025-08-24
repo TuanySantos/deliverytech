@@ -10,12 +10,18 @@ import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.mapper.RestauranteMapper;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
 
-
+import com.deliverytech.delivery_api.dto.requestDto.RestauranteRequestDTO;
+import com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO;
 @Service
 public interface RestauranteService {
-	List<Restaurante> buscarPorCategoria(String categoria);
-	List<Restaurante> buscarAtivos();
-	List<Restaurante> buscarPorTaxaEntregaMenorIgual(java.math.BigDecimal taxaEntrega);
-	List<Restaurante> buscarTop5PorNomeAsc();
-	List<Restaurante> buscarPorNome(String nome);
+	List<RestauranteResponseDTO> buscarPorCategoria(String categoria);
+	List<RestauranteResponseDTO> buscarAtivos();
+	List<RestauranteResponseDTO> buscarPorTaxaEntregaMenorIgual(java.math.BigDecimal taxaEntrega);
+	List<RestauranteResponseDTO> buscarTop5PorNomeAsc();
+	List<RestauranteResponseDTO> buscarPorNome(String nome);
+
+	RestauranteResponseDTO salvar(RestauranteRequestDTO dto);
+	RestauranteResponseDTO buscarPorId(Long id);
+	RestauranteResponseDTO atualizar(Long id, RestauranteRequestDTO dto);
+	void deletar(Long id);
 }

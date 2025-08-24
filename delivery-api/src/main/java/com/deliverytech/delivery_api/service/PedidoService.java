@@ -1,13 +1,19 @@
 package com.deliverytech.delivery_api.service;
 
-import com.deliverytech.delivery_api.entity.Pedido;
+import com.deliverytech.delivery_api.dto.requestDto.PedidoRequestDTO;
+import com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO;
 import com.deliverytech.delivery_api.enums.StatusPedidoEnum;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PedidoService {
-	List<Pedido> buscarPorClienteId(Long clienteId);
-	List<Pedido> buscarPorStatus(StatusPedidoEnum status);
-	List<Pedido> buscarTop10Recentes();
-	List<Pedido> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+	List<PedidoResponseDTO> buscarPorClienteId(Long clienteId);
+	List<PedidoResponseDTO> buscarPorStatus(StatusPedidoEnum status);
+	List<PedidoResponseDTO> buscarTop10Recentes();
+	List<PedidoResponseDTO> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+
+	PedidoResponseDTO salvar(PedidoRequestDTO dto);
+	PedidoResponseDTO buscarPorId(Long id);
+	PedidoResponseDTO atualizar(Long id, PedidoRequestDTO dto);
+	void deletar(Long id);
 }

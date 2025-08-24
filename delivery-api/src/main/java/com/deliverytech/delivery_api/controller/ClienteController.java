@@ -3,7 +3,6 @@ package com.deliverytech.delivery_api.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -17,7 +16,6 @@ public class ClienteController {
 
     private final ClienteService clienteService;
 
-    @Autowired
     public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
     }
