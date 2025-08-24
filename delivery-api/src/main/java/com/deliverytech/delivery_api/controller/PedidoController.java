@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.deliverytech.delivery_api.dto.requestDto.PedidoRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO;
-import com.deliverytech.delivery_api.enums.StatusPedidoEnum;
+import com.deliverytech.delivery_api.enums.StatusPedido;
 import com.deliverytech.delivery_api.service.PedidoService;
 
 @RestController
@@ -33,7 +33,7 @@ public class PedidoController {
 	}
 
 	@GetMapping("/status/{status}")
-	public List<PedidoResponseDTO> buscarPorStatus(@PathVariable StatusPedidoEnum status) {
+	public List<PedidoResponseDTO> buscarPorStatus(@PathVariable StatusPedido status) {
 		return pedidoService.buscarPorStatus(status);
 	}
 

@@ -1,4 +1,4 @@
-package com.deliverytech.delivery_api.loader;
+package com.deliverytech.delivery_api.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
