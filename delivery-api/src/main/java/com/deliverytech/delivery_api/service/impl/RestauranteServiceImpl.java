@@ -13,6 +13,8 @@ import com.deliverytech.delivery_api.exception.BusinessException;
 import com.deliverytech.delivery_api.enums.ErroNegocio;
 import java.util.List;
 import java.math.BigDecimal;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 
 @Service
 @Transactional
@@ -59,16 +61,16 @@ public class RestauranteServiceImpl implements RestauranteService {
 	@Override
 	public RestauranteResponseDTO salvar(RestauranteRequestDTO dto) {
         if (dto.nome() == null || dto.nome().isBlank()) {
-            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Nome do restaurante é obrigatório");
+            throw new ValidationException("Nome do restaurante é obrigatório");
         }
         if (dto.categoria() == null || dto.categoria().isBlank()) {
-            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Categoria do restaurante é obrigatória");
+            throw new ValidationException("Categoria do restaurante é obrigatória");
         }
         if (dto.endereco() == null || dto.endereco().isBlank()) {
-            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Endereço do restaurante é obrigatório");
+            throw new ValidationException("Endereço do restaurante é obrigatório");
         }
         if (dto.taxaEntrega() == null || dto.taxaEntrega().compareTo(BigDecimal.ZERO) < 0) {
-            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Taxa de entrega deve ser zero ou positiva");
+            throw new ValidationException("Taxa de entrega deve ser zero ou positiva");
         }
 		Restaurante restaurante = restauranteMapper.toEntity(dto);
 		Restaurante salvo = restauranteRepository.save(restaurante);
@@ -79,7 +81,7 @@ public class RestauranteServiceImpl implements RestauranteService {
     @Transactional(readOnly = true)
 	public RestauranteResponseDTO buscarPorId(Long id) {
 		Restaurante restaurante = restauranteRepository.findById(id)
-			.orElseThrow(() -> new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado"));
+			.orElseThrow(() -> new EntityNotFoundException("Restaurante não encontrado"));
 		return restauranteMapper.toResponseDto(restaurante);
 	}
 

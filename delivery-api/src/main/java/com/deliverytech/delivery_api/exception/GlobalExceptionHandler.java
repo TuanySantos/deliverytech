@@ -1,5 +1,9 @@
 package com.deliverytech.delivery_api.exception;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.transaction.TransactionSystemException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,5 +24,24 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(status)
             .body(new ErroResponse(ex.getTipo().name(), ex.getMessage()));
+    }
+
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleEntityNotFound(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ErroResponse("ENTITY_NOT_FOUND", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErroResponse> handleConstraintViolation(ConstraintViolationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErroResponse("VALIDATION_ERROR", ex.getMessage()));
+    }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<ErroResponse> handleTransactionSystem(TransactionSystemException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErroResponse("TRANSACTION_ERROR", ex.getMessage()));
     }
 }

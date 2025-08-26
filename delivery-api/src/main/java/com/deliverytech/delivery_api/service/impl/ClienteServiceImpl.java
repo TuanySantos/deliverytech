@@ -16,6 +16,9 @@ import com.deliverytech.delivery_api.projection.RankingClienteProjection;
 import com.deliverytech.delivery_api.exception.BusinessException;
 import com.deliverytech.delivery_api.enums.ErroNegocio;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
+
 @Service
 @Transactional
 public class ClienteServiceImpl implements ClienteService {
@@ -29,10 +32,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteResponseDTO salvar(ClienteRequestDTO dto) {
         if (dto.nome() == null || dto.nome().isBlank()) {
-            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Nome do cliente é obrigatório");
+            throw new ValidationException("Nome do cliente é obrigatório");
         }
         if (dto.email() == null || dto.email().isBlank()) {
-            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Email do cliente é obrigatório");
+            throw new ValidationException("Email do cliente é obrigatório");
         }
         if (clienteRepository.existsByEmail(dto.email())) {
             throw new BusinessException(ErroNegocio.EMAIL_JA_CADASTRADO, "Email já cadastrado");
@@ -46,7 +49,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Transactional(readOnly = true)
     public ClienteResponseDTO buscarPorId(Long id) {
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado"));
         return clienteMapper.toResponseDto(cliente);
     }
 

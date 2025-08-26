@@ -14,6 +14,8 @@ import com.deliverytech.delivery_api.enums.ErroNegocio;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 
 @Service
 @Transactional
@@ -52,6 +54,9 @@ public class ProdutoServiceImpl implements ProdutoService {
 
 	@Override
 	public ProdutoResponseDTO salvar(ProdutoRequestDTO dto) {
+	    if (dto.nome() == null || dto.nome().isBlank()) {
+	        throw new ValidationException("Nome do produto é obrigatório");
+	    }
 		Produto produto = produtoMapper.toEntity(dto);
 		Produto salvo = produtoRepository.save(produto);
 		return produtoMapper.toResponseDto(salvo);
@@ -61,7 +66,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Transactional(readOnly = true)
 	public ProdutoResponseDTO buscarPorId(Long id) {
 		Produto produto = produtoRepository.findById(id)
-			.orElseThrow(() -> new BusinessException(ErroNegocio.PRODUTO_NAO_ENCONTRADO, "Produto não encontrado"));
+				.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
 		return produtoMapper.toResponseDto(produto);
 	}
 
