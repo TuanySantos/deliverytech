@@ -1,7 +1,5 @@
-
 package com.deliverytech.delivery_api.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,19 +47,6 @@ public class ProdutoController {
 		return produtoService.buscarPorPrecoMenorIgual(preco);
 	}
 
-	// CRUD
-	@PostMapping
-	public ResponseEntity<ProdutoResponseDTO> criarProduto(@RequestBody ProdutoRequestDTO dto) {
-		ProdutoResponseDTO salvo = produtoService.salvar(dto);
-		return ResponseEntity.ok(salvo);
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id) {
-		ProdutoResponseDTO produto = produtoService.buscarPorId(id);
-		return ResponseEntity.ok(produto);
-	}
-
 	@PutMapping("/{id}")
 	public ResponseEntity<ProdutoResponseDTO> atualizarProduto(@PathVariable Long id, @RequestBody ProdutoRequestDTO dto) {
 		ProdutoResponseDTO atualizado = produtoService.atualizar(id, dto);
@@ -72,5 +57,11 @@ public class ProdutoController {
 	public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
 		produtoService.deletar(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping
+	public ResponseEntity<ProdutoResponseDTO> cadastrarProduto(@RequestBody ProdutoRequestDTO dto) {
+		ProdutoResponseDTO produto = produtoService.cadastrarProduto(dto);
+		return ResponseEntity.ok(produto);
 	}
 }
