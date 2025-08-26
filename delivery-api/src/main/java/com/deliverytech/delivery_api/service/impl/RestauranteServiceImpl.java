@@ -13,7 +13,6 @@ import com.deliverytech.delivery_api.exception.BusinessException;
 import com.deliverytech.delivery_api.enums.ErroNegocio;
 import java.util.List;
 import java.math.BigDecimal;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 
 @Service
@@ -28,38 +27,8 @@ public class RestauranteServiceImpl implements RestauranteService {
 		this.restauranteMapper = restauranteMapper;
 	}
 
-	@Override
-    @Transactional(readOnly = true)
-	public List<RestauranteResponseDTO> buscarPorCategoria(String categoria) {
-		return restauranteMapper.toResponseDtoList(restauranteRepository.findByCategoria(categoria));
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public List<RestauranteResponseDTO> buscarAtivos() {
-		return restauranteMapper.toResponseDtoList(restauranteRepository.findByAtivoTrue());
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public List<RestauranteResponseDTO> buscarPorTaxaEntregaMenorIgual(BigDecimal taxaEntrega) {
-		return restauranteMapper.toResponseDtoList(restauranteRepository.findByTaxaEntregaLessThanEqual(taxaEntrega));
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public List<RestauranteResponseDTO> buscarTop5PorNomeAsc() {
-		return restauranteMapper.toResponseDtoList(restauranteRepository.findTop5ByOrderByNomeAsc());
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public List<RestauranteResponseDTO> buscarPorNome(String nome) {
-		return restauranteMapper.toResponseDtoList(restauranteRepository.findByNome(nome));
-	}
-
-	@Override
-	public RestauranteResponseDTO salvar(RestauranteRequestDTO dto) {
+    @Override
+    public RestauranteResponseDTO cadastrarRestaurante(RestauranteRequestDTO dto) {
         if (dto.nome() == null || dto.nome().isBlank()) {
             throw new ValidationException("Nome do restaurante é obrigatório");
         }
@@ -72,23 +41,35 @@ public class RestauranteServiceImpl implements RestauranteService {
         if (dto.taxaEntrega() == null || dto.taxaEntrega().compareTo(BigDecimal.ZERO) < 0) {
             throw new ValidationException("Taxa de entrega deve ser zero ou positiva");
         }
-		Restaurante restaurante = restauranteMapper.toEntity(dto);
-		Restaurante salvo = restauranteRepository.save(restaurante);
-		return restauranteMapper.toResponseDto(salvo);
-	}
+        Restaurante restaurante = restauranteMapper.toEntity(dto);
+        Restaurante salvo = restauranteRepository.save(restaurante);
+        return restauranteMapper.toResponseDto(salvo);
+    }
 
-	@Override
+    @Override
     @Transactional(readOnly = true)
-	public RestauranteResponseDTO buscarPorId(Long id) {
-		Restaurante restaurante = restauranteRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException("Restaurante não encontrado"));
-		return restauranteMapper.toResponseDto(restaurante);
-	}
+    public RestauranteResponseDTO buscarRestaurantePorId(Long id) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado"));
+        return restauranteMapper.toResponseDto(restaurante);
+    }
 
-	@Override
-	public RestauranteResponseDTO atualizar(Long id, RestauranteRequestDTO dto) {
-		Restaurante restaurante = restauranteRepository.findById(id)
-			.orElseThrow(() -> new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado"));
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestauranteResponseDTO> buscarRestaurantesPorCategoria(String categoria) {
+        return restauranteMapper.toResponseDtoList(restauranteRepository.findByCategoria(categoria));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestauranteResponseDTO> buscarRestaurantesDisponiveis() {
+        return restauranteMapper.toResponseDtoList(restauranteRepository.findByAtivoTrue());
+    }
+
+    @Override
+    public RestauranteResponseDTO atualizarRestaurante(Long id, RestauranteRequestDTO dto) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado"));
         if (dto.nome() == null || dto.nome().isBlank()) {
             throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Nome do restaurante é obrigatório");
         }
@@ -101,18 +82,19 @@ public class RestauranteServiceImpl implements RestauranteService {
         if (dto.taxaEntrega() == null || dto.taxaEntrega().compareTo(BigDecimal.ZERO) < 0) {
             throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Taxa de entrega deve ser zero ou positiva");
         }
-		restaurante.setNome(dto.nome());
-		restaurante.setCategoria(dto.categoria());
-		restaurante.setEndereco(dto.endereco());
-		restaurante.setTaxaEntrega(dto.taxaEntrega());
-		Restaurante atualizado = restauranteRepository.save(restaurante);
-		return restauranteMapper.toResponseDto(atualizado);
-	}
+        restaurante.setNome(dto.nome());
+        restaurante.setCategoria(dto.categoria());
+        restaurante.setEndereco(dto.endereco());
+        restaurante.setTaxaEntrega(dto.taxaEntrega());
+        Restaurante atualizado = restauranteRepository.save(restaurante);
+        return restauranteMapper.toResponseDto(atualizado);
+    }
 
-	@Override
-	public void deletar(Long id) {
-        Restaurante restaurante = restauranteRepository.findById(id)
+    @Override
+    public BigDecimal calcularTaxaEntrega(Long restauranteId, String cep) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
             .orElseThrow(() -> new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado"));
-        restauranteRepository.deleteById(id);
-	}
+		//TODO: Implementar lógica baseada no CEP
+        return restaurante.getTaxaEntrega();
+    }
 }

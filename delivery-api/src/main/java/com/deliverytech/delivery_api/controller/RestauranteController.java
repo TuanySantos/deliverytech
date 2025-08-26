@@ -1,21 +1,21 @@
 package com.deliverytech.delivery_api.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import java.util.List;
-import java.math.BigDecimal;
-import com.deliverytech.delivery_api.service.RestauranteService;
 import com.deliverytech.delivery_api.dto.requestDto.RestauranteRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO;
+import com.deliverytech.delivery_api.service.RestauranteService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/restaurantes")
-public class RestaurantController {
+public class RestauranteController {
 
     private final RestauranteService restauranteService;
 
-    public RestaurantController(RestauranteService restauranteService) {
+    public RestauranteController(RestauranteService restauranteService) {
         this.restauranteService = restauranteService;
     }
 
@@ -53,7 +53,7 @@ public class RestaurantController {
         RestauranteResponseDTO response = restauranteService.atualizarRestaurante(id, dto);
         return ResponseEntity.ok(response);
     }
-
+    
     // GET /api/restaurantes/{id}/taxa-entrega?cep=XXXXX
     @GetMapping("/{id}/taxa-entrega")
     public ResponseEntity<BigDecimal> calcularTaxaEntrega(@PathVariable Long id, @RequestParam String cep) {

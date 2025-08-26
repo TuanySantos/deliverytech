@@ -30,7 +30,7 @@ public class ClienteServiceImpl implements ClienteService {
     private ClienteMapper clienteMapper;
 
     @Override
-    public ClienteResponseDTO salvar(ClienteRequestDTO dto) {
+    public ClienteResponseDTO cadastrarCliente(ClienteRequestDTO dto) {
         if (dto.nome() == null || dto.nome().isBlank()) {
             throw new ValidationException("Nome do cliente é obrigatório");
         }
@@ -47,23 +47,22 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional(readOnly = true)
-    public ClienteResponseDTO buscarPorId(Long id) {
+    public ClienteResponseDTO buscarClientePorId(Long id) {
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado"));
+                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
         return clienteMapper.toResponseDto(cliente);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ClienteResponseDTO> listarTodos() {
-        return clienteRepository.findAll()
-                .stream()
+    public ClienteResponseDTO buscarClientePorEmail(String email) {
+        return clienteRepository.findByEmail(email)
                 .map(clienteMapper::toResponseDto)
-                .collect(Collectors.toList());
+                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
     }
 
     @Override
-    public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO dto) {
+    public ClienteResponseDTO atualizarCliente(Long id, ClienteRequestDTO dto) {
         Cliente clienteExistente = clienteRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
         if (dto.nome() == null || dto.nome().isBlank()) {
@@ -80,30 +79,21 @@ public class ClienteServiceImpl implements ClienteService {
         clienteExistente.setSenha(dto.senha());
         clienteExistente.setEndereco(dto.endereco());
         clienteExistente.setTelefone(dto.telefone());
-        // TODO implementar perfil
-        //  clienteExistente.setPerfil(dto.perfil());
         Cliente atualizado = clienteRepository.save(clienteExistente);
         return clienteMapper.toResponseDto(atualizado);
     }
 
     @Override
-    public void deletar(Long id) {
+    public void ativarDesativarCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id)
-            .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
-        clienteRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ClienteResponseDTO buscarPorEmail(String email) {
-        return clienteRepository.findByEmail(email)
-                .map(clienteMapper::toResponseDto)
                 .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
+        cliente.setAtivo(!cliente.isAtivo());
+        clienteRepository.save(cliente);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ClienteResponseDTO> listarAtivos() {
+    public List<ClienteResponseDTO> listarClientesAtivos() {
         return clienteRepository.findByAtivoTrue()
                 .stream()
                 .map(clienteMapper::toResponseDto)
@@ -111,19 +101,6 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public ClienteResponseDTO buscarPorNome(String nome) {
-        return clienteRepository.findByNomeContainingIgnoreCase(nome)
-                .map(clienteMapper::toResponseDto)
-                .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existePorEmail(String email) {
-        return clienteRepository.existsByEmail(email);
-    }
-
     @Transactional(readOnly = true)
     public List<RankingClienteProjection> listarRankingClientesPorPedidos() {
         return clienteRepository.findRankingClientesPorPedidos();

@@ -11,7 +11,7 @@ import com.deliverytech.delivery_api.dto.responseDto.ClienteResponseDTO;
 import com.deliverytech.delivery_api.service.ClienteService;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 public class ClienteController {
 
     private final ClienteService clienteService;
@@ -20,58 +20,45 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
+    // POST /api/clientes
     @PostMapping
-    public ResponseEntity<ClienteResponseDTO> criarCliente(@RequestBody ClienteRequestDTO dto) {
-        ClienteResponseDTO response = clienteService.salvar(dto);
+    public ResponseEntity<ClienteResponseDTO> cadastrarCliente(@RequestBody ClienteRequestDTO dto) {
+        ClienteResponseDTO response = clienteService.cadastrarCliente(dto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    // GET /api/clientes/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteResponseDTO> buscarCliente(@PathVariable Long id) {
-        ClienteResponseDTO response = clienteService.buscarPorId(id);
+    public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable Long id) {
+        ClienteResponseDTO response = clienteService.buscarClientePorId(id);
         return ResponseEntity.ok(response);
     }
 
+    // GET /api/clientes
     @GetMapping
-    public ResponseEntity<List<ClienteResponseDTO>> listarClientes() {
-        List<ClienteResponseDTO> clientes = clienteService.listarTodos();
+    public ResponseEntity<List<ClienteResponseDTO>> listarClientesAtivos() {
+        List<ClienteResponseDTO> clientes = clienteService.listarClientesAtivos();
         return ResponseEntity.ok(clientes);
     }
 
+    // PUT /api/clientes/{id}
     @PutMapping("/{id}")
     public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable Long id, @RequestBody ClienteRequestDTO dto) {
-        ClienteResponseDTO response = clienteService.atualizar(id, dto);
+        ClienteResponseDTO response = clienteService.atualizarCliente(id, dto);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarCliente(@PathVariable Long id) {
-        clienteService.deletar(id);
+    // PATCH /api/clientes/{id}/status
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> ativarDesativarCliente(@PathVariable Long id) {
+        clienteService.ativarDesativarCliente(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Consultas customizadas
+    // GET /api/clientes/email/{email}
     @GetMapping("/email/{email}")
     public ResponseEntity<ClienteResponseDTO> buscarPorEmail(@PathVariable String email) {
-        ClienteResponseDTO response = clienteService.buscarPorEmail(email);
+        ClienteResponseDTO response = clienteService.buscarClientePorEmail(email);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/ativos")
-    public ResponseEntity<List<ClienteResponseDTO>> listarAtivos() {
-        List<ClienteResponseDTO> clientes = clienteService.listarAtivos();
-        return ResponseEntity.ok(clientes);
-    }
-
-    @GetMapping("/nome/{nome}")
-    public ResponseEntity<ClienteResponseDTO> buscarPorNome(@PathVariable String nome) {
-        ClienteResponseDTO response = clienteService.buscarPorNome(nome);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/existe-email/{email}")
-    public ResponseEntity<Boolean> existePorEmail(@PathVariable String email) {
-        boolean existe = clienteService.existePorEmail(email);
-        return ResponseEntity.ok(existe);
     }
 }
