@@ -12,6 +12,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findByDisponivelTrue();
     List<Produto> findByCategoria(String categoria);
     List<Produto> findByPrecoLessThanEqual(BigDecimal preco);
+    List<Produto> findByRestauranteIdAndDisponivelTrue(Long restauranteId);
+    List<Produto> findByCategoriaAndDisponivelTrue(String categoria);
 
     @Query(value = "SELECT pr.nome as nome, SUM(ip.quantidade) as quantidadeVendida FROM item_pedido ip JOIN Produto pr ON pr.id = ip.produto_id GROUP BY pr.nome ORDER BY quantidadeVendida DESC LIMIT 10", nativeQuery = true)
     List<ProdutoMaisVendidoProjection> findProdutosMaisVendidos();

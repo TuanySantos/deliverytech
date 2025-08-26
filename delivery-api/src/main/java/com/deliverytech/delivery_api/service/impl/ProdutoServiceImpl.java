@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.deliverytech.delivery_api.service.ProdutoService;
 import com.deliverytech.delivery_api.entity.Produto;
 import com.deliverytech.delivery_api.repository.ProdutoRepository;
+import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import com.deliverytech.delivery_api.dto.requestDto.ProdutoRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.ProdutoResponseDTO;
 import com.deliverytech.delivery_api.mapper.ProdutoMapper;
@@ -26,6 +27,9 @@ public class ProdutoServiceImpl implements ProdutoService {
 
 	@Autowired
 	private ProdutoMapper produtoMapper;
+
+	@Autowired
+	private RestauranteRepository restauranteRepository;
 
 
 	@Override
@@ -53,24 +57,6 @@ public class ProdutoServiceImpl implements ProdutoService {
 	}
 
 	@Override
-	public ProdutoResponseDTO salvar(ProdutoRequestDTO dto) {
-	    if (dto.nome() == null || dto.nome().isBlank()) {
-	        throw new ValidationException("Nome do produto é obrigatório");
-	    }
-		Produto produto = produtoMapper.toEntity(dto);
-		Produto salvo = produtoRepository.save(produto);
-		return produtoMapper.toResponseDto(salvo);
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public ProdutoResponseDTO buscarPorId(Long id) {
-		Produto produto = produtoRepository.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
-		return produtoMapper.toResponseDto(produto);
-	}
-
-	@Override
 	public ProdutoResponseDTO atualizar(Long id, ProdutoRequestDTO dto) {
 		Produto produto = produtoRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(ErroNegocio.PRODUTO_NAO_ENCONTRADO, "Produto não encontrado"));
@@ -91,5 +77,62 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Transactional(readOnly = true)
 	public List<ProdutoMaisVendidoProjection> listarProdutosMaisVendidos() {
 		return produtoRepository.findProdutosMaisVendidos();
+	}
+
+	@Override
+	public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO dto) {
+	    if (dto.nome() == null || dto.nome().isBlank()) {
+	        throw new ValidationException("Nome do produto é obrigatório");
+	    }
+	    if (!restauranteRepository.existsById(dto.restauranteId())) {
+	        throw new BusinessException(ErroNegocio.RESTAURANTE_NAO_ENCONTRADO, "Restaurante não encontrado");
+	    }
+	    Produto produto = produtoMapper.toEntity(dto);
+	    Produto salvo = produtoRepository.save(produto);
+	    return produtoMapper.toResponseDto(salvo);
+	}
+
+	@Override
+    @Transactional(readOnly = true)
+	public List<ProdutoResponseDTO> buscarProdutosPorRestaurante(Long restauranteId) {
+		return produtoMapper.toResponseDtoList(produtoRepository.findByRestauranteIdAndDisponivelTrue(restauranteId));
+	}
+
+	@Override
+    @Transactional(readOnly = true)
+	public ProdutoResponseDTO buscarProdutoPorId(Long id) {
+		Produto produto = produtoRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+		if (!produto.isDisponivel()) {
+			throw new BusinessException(ErroNegocio.PRODUTO_INDISPONIVEL, "Produto indisponível");
+		}
+		return produtoMapper.toResponseDto(produto);
+	}
+
+	@Override
+	public ProdutoResponseDTO atualizarProduto(Long id, ProdutoRequestDTO dto) {
+		Produto produto = produtoRepository.findById(id)
+				.orElseThrow(() -> new BusinessException(ErroNegocio.PRODUTO_NAO_ENCONTRADO, "Produto não encontrado"));
+		produto.setNome(dto.nome());
+		produto.setDescricao(dto.descricao());
+		produto.setPreco(dto.preco());
+		produto.setCategoria(dto.categoria());
+		produto.setDisponivel(true);
+		Produto atualizado = produtoRepository.save(produto);
+		return produtoMapper.toResponseDto(atualizado);
+	}
+
+	@Override
+	public void alterarDisponibilidade(Long id, boolean disponivel) {
+		Produto produto = produtoRepository.findById(id)
+				.orElseThrow(() -> new BusinessException(ErroNegocio.PRODUTO_NAO_ENCONTRADO, "Produto não encontrado"));
+		produto.setDisponivel(disponivel);
+		produtoRepository.save(produto);
+	}
+
+	@Override
+    @Transactional(readOnly = true)
+	public List<ProdutoResponseDTO> buscarProdutosPorCategoria(String categoria) {
+		return produtoMapper.toResponseDtoList(produtoRepository.findByCategoriaAndDisponivelTrue(categoria));
 	}
 }
