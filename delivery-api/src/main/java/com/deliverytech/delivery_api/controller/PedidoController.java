@@ -1,98 +1,65 @@
 package com.deliverytech.delivery_api.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import java.time.LocalDateTime;
+import org.springframework.http.HttpStatus;
 import java.util.List;
+import java.math.BigDecimal;
 import com.deliverytech.delivery_api.dto.requestDto.PedidoRequestDTO;
+import com.deliverytech.delivery_api.dto.requestDto.ItemPedidoRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO;
 import com.deliverytech.delivery_api.enums.StatusPedido;
 import com.deliverytech.delivery_api.service.PedidoService;
 
 @RestController
-@RequestMapping("/pedidos")
+@RequestMapping("/api/pedidos")
 public class PedidoController {
 
-	private final PedidoService pedidoService;
+    private final PedidoService pedidoService;
 
-	public PedidoController(PedidoService pedidoService) {
-		this.pedidoService = pedidoService;
-	}
+    public PedidoController(PedidoService pedidoService) {
+        this.pedidoService = pedidoService;
+    }
 
-	@GetMapping("/cliente/{clienteId}")
-	public ResponseEntity<List<PedidoResponseDTO>> buscarPorClienteId(@PathVariable Long clienteId) {
-		List<PedidoResponseDTO> pedidos = pedidoService.buscarPorClienteId(clienteId);
-		if (pedidos == null || pedidos.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.ok(pedidos);
-	}
+    // POST /api/pedidos
+    @PostMapping
+    public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO dto) {
+        PedidoResponseDTO response = pedidoService.criarPedido(dto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
-	@GetMapping("/status/{status}")
-	public ResponseEntity<List<PedidoResponseDTO>> buscarPorStatus(@PathVariable StatusPedido status) {
-		List<PedidoResponseDTO> pedidos = pedidoService.buscarPorStatus(status);
-		if (pedidos == null || pedidos.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.ok(pedidos);
-	}
+    // GET /api/pedidos/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoResponseDTO> buscarPedidoPorId(@PathVariable Long id) {
+        PedidoResponseDTO response = pedidoService.buscarPedidoPorId(id);
+        return ResponseEntity.ok(response);
+    }
 
-	@GetMapping("/recentes")
-	public ResponseEntity<List<PedidoResponseDTO>> buscarTop10Recentes() {
-		List<PedidoResponseDTO> pedidos = pedidoService.buscarTop10Recentes();
-		if (pedidos == null || pedidos.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.ok(pedidos);
-	}
+    // GET /api/clientes/{clienteId}/pedidos
+    @GetMapping("/clientes/{clienteId}/pedidos")
+    public ResponseEntity<List<PedidoResponseDTO>> buscarPedidosPorCliente(@PathVariable Long clienteId) {
+        List<PedidoResponseDTO> pedidos = pedidoService.buscarPedidosPorCliente(clienteId);
+        return ResponseEntity.ok(pedidos);
+    }
 
-	@GetMapping("/periodo")
-	public ResponseEntity<List<PedidoResponseDTO>> buscarPorPeriodo(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
-		List<PedidoResponseDTO> pedidos = pedidoService.buscarPorPeriodo(inicio, fim);
-		if (pedidos == null || pedidos.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.ok(pedidos);
-	}
+    // PATCH /api/pedidos/{id}/status
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<PedidoResponseDTO> atualizarStatusPedido(@PathVariable Long id, @RequestBody StatusPedido status) {
+        PedidoResponseDTO response = pedidoService.atualizarStatusPedido(id, status);
+        return ResponseEntity.ok(response);
+    }
 
-	// CRUD
-	@PostMapping
-	public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO dto) {
-		PedidoResponseDTO salvo = pedidoService.salvar(dto);
-		return ResponseEntity.status(201).body(salvo);
-	}
+    // DELETE /api/pedidos/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelarPedido(@PathVariable Long id) {
+        pedidoService.cancelarPedido(id);
+        return ResponseEntity.noContent().build();
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<PedidoResponseDTO> buscarPorId(@PathVariable Long id) {
-		PedidoResponseDTO pedido = pedidoService.buscarPorId(id);
-		if (pedido != null) {
-			return ResponseEntity.ok(pedido);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-
-	@PutMapping("/{id}")
-	public ResponseEntity<PedidoResponseDTO> atualizarPedido(@PathVariable Long id, @RequestBody PedidoRequestDTO dto) {
-		PedidoResponseDTO atualizado = pedidoService.atualizar(id, dto);
-		if (atualizado != null) {
-			return ResponseEntity.ok(atualizado);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletarPedido(@PathVariable Long id) {
-		pedidoService.deletar(id);
-		return ResponseEntity.noContent().build();
-	}
+    // POST /api/pedidos/calcular
+    @PostMapping("/calcular")
+    public ResponseEntity<BigDecimal> calcularTotalPedido(@RequestBody List<ItemPedidoRequestDTO> itens) {
+        BigDecimal total = pedidoService.calcularTotalPedido(itens);
+        return ResponseEntity.ok(total);
+    }
 }

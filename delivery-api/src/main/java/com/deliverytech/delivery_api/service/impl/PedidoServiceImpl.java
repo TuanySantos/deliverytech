@@ -19,6 +19,7 @@ import com.deliverytech.delivery_api.repository.ProdutoRepository;
 import com.deliverytech.delivery_api.repository.PedidoRepository;
 import com.deliverytech.delivery_api.dto.requestDto.PedidoRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO;
+import com.deliverytech.delivery_api.dto.requestDto.ItemPedidoRequestDTO;
 import com.deliverytech.delivery_api.mapper.PedidoMapper;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,46 +47,22 @@ public class PedidoServiceImpl implements PedidoService {
 	@Autowired
 	private ProdutoRepository produtoRepository;
 
-	@Override
-    @Transactional(readOnly = true)
-	public List<PedidoResponseDTO> buscarPorClienteId(Long clienteId) {
-		return pedidoMapper.toResponseDtoList(pedidoRepository.findByClienteId(clienteId));
-	}
+    @Override
+    public PedidoResponseDTO criarPedido(PedidoRequestDTO dto) {
+        // Validação do cliente
+        Cliente cliente = clienteRepository.findById(dto.clienteId())
+            .orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
+        if (!cliente.isAtivo() || cliente.getEndereco() == null || cliente.getEndereco().isEmpty()) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Cliente inativo ou endereço inválido");
+        }
 
-	@Override
-    @Transactional(readOnly = true)
-	public List<PedidoResponseDTO> buscarPorStatus(StatusPedido status) {
-		return pedidoMapper.toResponseDtoList(pedidoRepository.findByStatus(status));
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public List<PedidoResponseDTO> buscarTop10Recentes() {
-		return pedidoMapper.toResponseDtoList(pedidoRepository.findTop10ByOrderByDataPedidoDesc());
-	}
-
-	@Override
-    @Transactional(readOnly = true)
-	public List<PedidoResponseDTO> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-		return pedidoMapper.toResponseDtoList(pedidoRepository.findByDataPedidoBetween(inicio, fim));
-	}
-
-	@Override
-	public PedidoResponseDTO salvar(PedidoRequestDTO dto) {
-		// Validação do cliente
-		Cliente cliente = clienteRepository.findById(dto.clienteId())
-			.orElseThrow(() -> new BusinessException(ErroNegocio.CLIENTE_NAO_ENCONTRADO, "Cliente não encontrado"));
-		if (!cliente.isAtivo() || cliente.getEndereco() == null || cliente.getEndereco().isEmpty()) {
-			throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Cliente inativo ou endereço inválido");
-		}
-
-		// Validação do restaurante
-		Restaurante restaurante = restauranteRepository.findById(dto.restauranteId())
-			.orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Restaurante não encontrado"));
-		if (!restaurante.isAtivo()) {
-			throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Restaurante fechado");
-		}
-		// TODO lógica para entrega na região
+        // Validação do restaurante
+        Restaurante restaurante = restauranteRepository.findById(dto.restauranteId())
+            .orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Restaurante não encontrado"));
+        if (!restaurante.isAtivo()) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Restaurante fechado");
+        }
+        // TODO lógica para entrega na região
        
         if (cliente.getEndereco() == null || restaurante.getEndereco() == null ||
             !cliente.getEndereco().toLowerCase().contains(restaurante.getEndereco().toLowerCase())) {
@@ -130,27 +107,67 @@ public class PedidoServiceImpl implements PedidoService {
 		return pedidoMapper.toResponseDto(salvo);
 	}
 
-	@Override
+    @Override
     @Transactional(readOnly = true)
-	public PedidoResponseDTO buscarPorId(Long id) {
-		Pedido pedido = pedidoRepository.findById(id)
-			.orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Pedido não encontrado"));
-		return pedidoMapper.toResponseDto(pedido);
-	}
+    public PedidoResponseDTO buscarPedidoPorId(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Pedido não encontrado"));
+        return pedidoMapper.toResponseDto(pedido);
+    }
 
-	@Override
-	public PedidoResponseDTO atualizar(Long id, PedidoRequestDTO dto) {
-		Pedido pedido = pedidoRepository.findById(id)
-			.orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Pedido não encontrado"));
-		// Atualize os campos necessários do pedido
-		Pedido atualizado = pedidoRepository.save(pedido);
-		return pedidoMapper.toResponseDto(atualizado);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public List<PedidoResponseDTO> buscarPedidosPorCliente(Long clienteId) {
+        return pedidoMapper.toResponseDtoList(pedidoRepository.findByClienteId(clienteId));
+    }
 
-	@Override
-	public void deletar(Long id) {
-		pedidoRepository.deleteById(id);
-	}
+    @Override
+    public PedidoResponseDTO atualizarStatusPedido(Long id, StatusPedido status) {
+        Pedido pedido = pedidoRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Pedido não encontrado"));
+        // Validação de transição de status
+        if (!isTransicaoValida(pedido.getStatus(), status)) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Transição de status inválida");
+        }
+        pedido.setStatus(status);
+        Pedido atualizado = pedidoRepository.save(pedido);
+        return pedidoMapper.toResponseDto(atualizado);
+    }
+
+    private boolean isTransicaoValida(StatusPedido atual, StatusPedido novo) {
+        // Exemplo de validação simples
+        if (atual == StatusPedido.CANCELADO) return false;
+        if (atual == StatusPedido.ENTREGUE && novo != StatusPedido.ENTREGUE) return false;
+        return true;
+    }
+
+    @Override
+    public BigDecimal calcularTotalPedido(List<ItemPedidoRequestDTO> itens) {
+        BigDecimal total = BigDecimal.ZERO;
+        for (ItemPedidoRequestDTO itemDto : itens) {
+            Produto produto = produtoRepository.findById(itemDto.produtoId())
+                .orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Produto não encontrado"));
+            if (!produto.isDisponivel()) {
+                throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Produto indisponível");
+            }
+            if (produto.getEstoque() < itemDto.quantidade()) {
+                throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Estoque insuficiente");
+            }
+            total = total.add(produto.getPreco().multiply(BigDecimal.valueOf(itemDto.quantidade())));
+        }
+        return total;
+    }
+
+    @Override
+    public void cancelarPedido(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Pedido não encontrado"));
+        if (pedido.getStatus() != StatusPedido.PENDENTE && pedido.getStatus() != StatusPedido.PREPARANDO) {
+            throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Pedido não pode ser cancelado neste status");
+        }
+        pedido.setStatus(StatusPedido.CANCELADO);
+        pedidoRepository.save(pedido);
+    }
 
     	// Relatório: Total de vendas por restaurante
     @Transactional(readOnly = true)

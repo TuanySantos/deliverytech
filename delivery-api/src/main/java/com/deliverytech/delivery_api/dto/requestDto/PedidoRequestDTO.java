@@ -1,9 +1,17 @@
 package com.deliverytech.delivery_api.dto.requestDto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record PedidoRequestDTO(
+    @NotNull
     Long clienteId,
+
+    @NotNull
     Long restauranteId,
+
+    @NotNull
+    @Valid
     List<ItemPedidoRequestDTO> itens
 ) {}
