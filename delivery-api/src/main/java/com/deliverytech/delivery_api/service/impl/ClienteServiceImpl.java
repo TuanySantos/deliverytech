@@ -16,7 +16,6 @@ import com.deliverytech.delivery_api.projection.RankingClienteProjection;
 import com.deliverytech.delivery_api.exception.BusinessException;
 import com.deliverytech.delivery_api.enums.ErroNegocio;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 
 @Service

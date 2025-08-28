@@ -80,6 +80,9 @@ public class PedidoServiceImpl implements PedidoService {
             if (produto.getEstoque() < itemDto.quantidade()) {
                 throw new BusinessException(ErroNegocio.ESTOQUE_INSUFICIENTE, "Estoque insuficiente");
             }
+            if (!produto.getRestaurante().getId().equals(dto.restauranteId())) {
+                throw new BusinessException(ErroNegocio.PEDIDO_INVALIDO, "Produto não pertence ao restaurante selecionado");
+            }
             subtotal = subtotal.add(produto.getPreco().multiply(BigDecimal.valueOf(itemDto.quantidade())));
         }
 
