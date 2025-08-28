@@ -10,15 +10,19 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO;
+import com.deliverytech.delivery_api.enums.StatusPedido;
 import com.deliverytech.delivery_api.dto.responseDto.ItemPedidoResponseDTO;
 import com.deliverytech.delivery_api.service.PedidoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,6 +36,10 @@ class PedidoControllerIT {
 
     @MockBean
     private PedidoService pedidoService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
 
      @Test
     void deveCriarPedidoComSucesso() throws Exception {
@@ -126,6 +134,29 @@ class PedidoControllerIT {
                       ]
                     }
                 """))
-                .andExpect(status().isBadRequest());
+                  .andExpect(status().isBadRequest());
+    }
+
+      @Test
+    void deveAtualizarStatusDoPedidoComValidacao() throws Exception {
+      //Status atualizado com validação
+       PedidoResponseDTO pedidoAtualizado = new PedidoResponseDTO(
+            1L,
+            "João Silva",
+            "Restaurante A",
+            LocalDateTime.now(),
+            List.of(
+                new ItemPedidoResponseDTO("Hambúrguer", 2, new BigDecimal("31.90")),
+                new ItemPedidoResponseDTO("Batata Frita", 1, new BigDecimal("14.00"))
+            ),
+            30
+       );
+
+        when(pedidoService.atualizarStatusPedido(anyLong(), any())).thenReturn(pedidoAtualizado);
+
+      mockMvc.perform(patch("/api/pedidos/1/status")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(StatusPedido.CONFIRMADO.name())))
+          .andExpect(status().isOk());
     }
 }
