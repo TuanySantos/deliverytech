@@ -1,6 +1,7 @@
 package com.deliverytech.delivery_api.controller;
 
 import com.deliverytech.delivery_api.dto.requestDto.RestauranteRequestDTO;
+import com.deliverytech.delivery_api.dto.responseDto.ProdutoResponseDTO;
 import com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO;
 import com.deliverytech.delivery_api.service.RestauranteService;
 
@@ -62,5 +63,12 @@ public class RestauranteController {
     public ResponseEntity<BigDecimal> calcularTaxaEntrega(@PathVariable Long id, @RequestParam String cep) {
         BigDecimal taxa = restauranteService.calcularTaxaEntrega(id, cep);
         return ResponseEntity.ok(taxa);
+    }
+
+    //GET /api/restaurantes/{id}/produtos
+    @GetMapping("/{id}/produtos")
+    public ResponseEntity<List<ProdutoResponseDTO>> listarProdutosDisponiveis(@PathVariable Long id) {
+        List<ProdutoResponseDTO> produtos = restauranteService.listarProdutosDisponiveis(id);
+        return ResponseEntity.ok(produtos);
     }
 }

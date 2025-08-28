@@ -4,10 +4,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.deliverytech.delivery_api.service.RestauranteService;
+import com.deliverytech.delivery_api.entity.Produto;
 import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import com.deliverytech.delivery_api.dto.requestDto.RestauranteRequestDTO;
+import com.deliverytech.delivery_api.dto.responseDto.ProdutoResponseDTO;
 import com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO;
+import com.deliverytech.delivery_api.mapper.ProdutoMapper;
 import com.deliverytech.delivery_api.mapper.RestauranteMapper;
 import com.deliverytech.delivery_api.exception.BusinessException;
 import com.deliverytech.delivery_api.enums.ErroNegocio;
@@ -21,10 +24,12 @@ public class RestauranteServiceImpl implements RestauranteService {
 
 	private final RestauranteRepository restauranteRepository;
 	private final RestauranteMapper restauranteMapper;
+    private final ProdutoMapper produtoMapper;
 
-	public RestauranteServiceImpl(RestauranteRepository restauranteRepository, RestauranteMapper restauranteMapper) {
+	public RestauranteServiceImpl(RestauranteRepository restauranteRepository, RestauranteMapper restauranteMapper, ProdutoMapper produtoMapper) {
 		this.restauranteRepository = restauranteRepository;
 		this.restauranteMapper = restauranteMapper;
+        this.produtoMapper = produtoMapper;
 	}
 
     @Override
@@ -97,4 +102,17 @@ public class RestauranteServiceImpl implements RestauranteService {
 		//TODO: Implementar lógica baseada no CEP
         return restaurante.getTaxaEntrega();
     }
-}
+
+    @Override
+    public List<ProdutoResponseDTO> listarProdutosDisponiveis(Long id) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(ErroNegocio.PRODUTO_INDISPONIVEL, "Restaurante não encontrado"));
+        
+        List<ProdutoResponseDTO> produtosDisponiveis = restaurante.getMenu().stream()
+            .filter(Produto::isDisponivel)
+            .map(produtoMapper::toResponseDto)
+            .toList();
+        return produtosDisponiveis; 
+    }
+
+} 

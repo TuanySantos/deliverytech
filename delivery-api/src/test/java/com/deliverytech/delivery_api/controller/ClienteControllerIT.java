@@ -32,16 +32,18 @@ class ClienteControllerIT {
     void deveRetornarStatus201AoCadastrarCliente() throws Exception {
      
         when(clienteService.cadastrarCliente(any())).thenReturn(
-            new ClienteResponseDTO(1L, "João Silva", "joao@email.com", "Rua A, 123", "11999999999", true));
-
+                new ClienteResponseDTO(
+                    1L,"João Silva","joao@email.com", "Rua A, 123","11999999999",true)
+                    );
         mockMvc.perform(post("/api/clientes")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
-                  "nome": "João Silva",
-                  "email": "joao@email.com",
-                  "telefone": "11999999999",
-                  "endereco": "Rua A, 123"
+                    "nome": "João Silva",
+                    "email": "joao@email.com",
+                    "senha": "senha123",
+                    "endereco": "Rua A, 123",
+                    "telefone": "11999999999"
                 }
             """))
             .andExpect(status().isCreated());

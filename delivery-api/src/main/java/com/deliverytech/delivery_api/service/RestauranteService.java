@@ -1,7 +1,9 @@
 package com.deliverytech.delivery_api.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import com.deliverytech.delivery_api.dto.requestDto.RestauranteRequestDTO;
+import com.deliverytech.delivery_api.dto.responseDto.ProdutoResponseDTO;
 import com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO;
 
 public interface RestauranteService {
@@ -10,5 +12,7 @@ public interface RestauranteService {
     List<RestauranteResponseDTO> buscarRestaurantesPorCategoria(String categoria);
     List<RestauranteResponseDTO> buscarRestaurantesDisponiveis();
     RestauranteResponseDTO atualizarRestaurante(Long id, RestauranteRequestDTO dto);
-    java.math.BigDecimal calcularTaxaEntrega(Long restauranteId, String cep);
+    BigDecimal calcularTaxaEntrega(Long restauranteId, String cep);
+    List<ProdutoResponseDTO> listarProdutosDisponiveis(Long id);
+
 }
