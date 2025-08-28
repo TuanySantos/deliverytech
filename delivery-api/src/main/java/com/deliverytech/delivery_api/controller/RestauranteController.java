@@ -3,6 +3,9 @@ package com.deliverytech.delivery_api.controller;
 import com.deliverytech.delivery_api.dto.requestDto.RestauranteRequestDTO;
 import com.deliverytech.delivery_api.dto.responseDto.RestauranteResponseDTO;
 import com.deliverytech.delivery_api.service.RestauranteService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +24,7 @@ public class RestauranteController {
 
     // POST /api/restaurantes
     @PostMapping
-    public ResponseEntity<RestauranteResponseDTO> cadastrarRestaurante(@RequestBody RestauranteRequestDTO dto) {
+    public ResponseEntity<RestauranteResponseDTO> cadastrarRestaurante(@Valid @RequestBody RestauranteRequestDTO dto) {
         RestauranteResponseDTO response = restauranteService.cadastrarRestaurante(dto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -49,7 +52,7 @@ public class RestauranteController {
 
     // PUT /api/restaurantes/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<RestauranteResponseDTO> atualizarRestaurante(@PathVariable Long id, @RequestBody RestauranteRequestDTO dto) {
+    public ResponseEntity<RestauranteResponseDTO> atualizarRestaurante(@PathVariable Long id, @Valid @RequestBody RestauranteRequestDTO dto) {
         RestauranteResponseDTO response = restauranteService.atualizarRestaurante(id, dto);
         return ResponseEntity.ok(response);
     }

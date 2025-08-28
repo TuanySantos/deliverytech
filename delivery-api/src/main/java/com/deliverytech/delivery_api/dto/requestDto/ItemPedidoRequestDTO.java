@@ -1,13 +1,13 @@
 package com.deliverytech.delivery_api.dto.requestDto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 
 public record ItemPedidoRequestDTO(
     @NotNull
     Long produtoId,
 
     @NotNull
-    @DecimalMin(value = "1")
+    @Min(1)
     int quantidade
 ) {}

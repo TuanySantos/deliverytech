@@ -11,6 +11,8 @@ import com.deliverytech.delivery_api.dto.responseDto.PedidoResponseDTO;
 import com.deliverytech.delivery_api.enums.StatusPedido;
 import com.deliverytech.delivery_api.service.PedidoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/pedidos")
 public class PedidoController {
@@ -23,7 +25,7 @@ public class PedidoController {
 
     // POST /api/pedidos
     @PostMapping
-    public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO dto) {
+    public ResponseEntity<PedidoResponseDTO> criarPedido(@Valid @RequestBody PedidoRequestDTO dto) {
         PedidoResponseDTO response = pedidoService.criarPedido(dto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -44,7 +46,7 @@ public class PedidoController {
 
     // PATCH /api/pedidos/{id}/status
     @PatchMapping("/{id}/status")
-    public ResponseEntity<PedidoResponseDTO> atualizarStatusPedido(@PathVariable Long id, @RequestBody StatusPedido status) {
+    public ResponseEntity<PedidoResponseDTO> atualizarStatusPedido(@PathVariable Long id, @Valid @RequestBody StatusPedido status) {
         PedidoResponseDTO response = pedidoService.atualizarStatusPedido(id, status);
         return ResponseEntity.ok(response);
     }
@@ -58,7 +60,7 @@ public class PedidoController {
 
     // POST /api/pedidos/calcular
     @PostMapping("/calcular")
-    public ResponseEntity<BigDecimal> calcularTotalPedido(@RequestBody List<ItemPedidoRequestDTO> itens) {
+    public ResponseEntity<BigDecimal> calcularTotalPedido(@Valid @RequestBody List<ItemPedidoRequestDTO> itens) {
         BigDecimal total = pedidoService.calcularTotalPedido(itens);
         return ResponseEntity.ok(total);
     }
